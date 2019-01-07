@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Autodesk.Revit;
+using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
-using Autodesk.Revit.UI;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
-using System.Collections;
-using Autodesk.Revit;
 using RevitServices.Persistence;
 using Revit.Elements;
+
 
 namespace JetPack_Z
 {
@@ -76,6 +78,7 @@ namespace JetPack_Z
             }
 
             return outputGroups;
+
         }
 
 
@@ -88,7 +91,21 @@ namespace JetPack_Z
             bool facingFlipped = element.FacingFlipped;
 
             return handFlipped ^ facingFlipped;
+
         }
+
+
+        public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
+        {
+
+            UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
+            ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
+
+            return from id in ids select uiDocument.Document.GetElement(id).ToDSType(true);
+
+        }
+
     }
 }
+
 

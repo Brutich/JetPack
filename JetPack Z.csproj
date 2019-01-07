@@ -47,6 +47,9 @@
       <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
+    </Reference>
     <Reference Include="RevitNodes">
       <HintPath>C:\Program Files\Dynamo\Dynamo Revit\2\Revit_2019\RevitNodes.dll</HintPath>
       <Private>False</Private>
@@ -61,10 +64,6 @@
     </Reference>
     <Reference Include="RevitServices">
       <HintPath>C:\Program Files\Dynamo\Dynamo Revit\2\Revit_2019\RevitServices.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitUIAPI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2018\RevitUIAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

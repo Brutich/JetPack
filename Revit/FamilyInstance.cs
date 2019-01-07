@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Architecture;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.Attributes;
-using System.Collections;
-using Autodesk.Revit;
-using RevitServices.Persistence;
-using Revit.Elements;
-
-namespace JetPack_Z
+﻿namespace JetPack_Z
 {
     class FamilyInstance2
     {
