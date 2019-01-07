@@ -19,10 +19,9 @@ namespace JetPack_Z
     public class Utilities
     {
 
-        private Utilities()
-        {
-        }
-        
+        private Utilities() { }
+
+
         private static Document document = DocumentManager.Instance.CurrentDBDocument;
 
 
@@ -37,13 +36,12 @@ namespace JetPack_Z
             // and revome filtered element IDs from element_ids
             elementIds.Remove(element_id);
             foreach (ElementId id in colectedElementIds)
-            {
                 elementIds.Remove(id);
-            }
 
             return colectedElementIds;
 
         }
+
 
         public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
         {
@@ -79,7 +77,18 @@ namespace JetPack_Z
 
             return outputGroups;
         }
-    }
 
+
+        public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
+        {
+            // Unwrap element
+            Autodesk.Revit.DB.FamilyInstance element = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+
+            bool handFlipped = element.HandFlipped;
+            bool facingFlipped = element.FacingFlipped;
+
+            return handFlipped ^ facingFlipped;
+        }
+    }
 }
 
