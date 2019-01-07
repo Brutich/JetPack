@@ -85,9 +85,9 @@ namespace JetPack_Z
         public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
-            Autodesk.Revit.DB.FamilyInstance element = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
 
-            return element.HandFlipped ^ element.FacingFlipped;
+            return instance.HandFlipped ^ instance.FacingFlipped;
 
         }
 
