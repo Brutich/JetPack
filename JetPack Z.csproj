@@ -7,8 +7,8 @@
     <ProjectGuid>{6A7C524A-AD63-4DF9-ADA9-525FD6B9881C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JetPack_X</RootNamespace>
-    <AssemblyName>JetPack X</AssemblyName>
+    <RootNamespace>JetPack_Z</RootNamespace>
+    <AssemblyName>JetPack Z</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
