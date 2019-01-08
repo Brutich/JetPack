@@ -13,15 +13,17 @@ using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using RevitServices.Persistence;
 using Revit.Elements;
+using Autodesk.DesignScript.Geometry;
 
-
-namespace JetPack_Z
+namespace Utilities
 {
-
-    public class Utilities
+    /// <summary>
+    /// The Utilities class.
+    /// </summary>
+    public class Element
     {
 
-        private Utilities() { }
+        private Element() { }
 
 
         private static Document document = DocumentManager.Instance.CurrentDBDocument;
@@ -45,6 +47,15 @@ namespace JetPack_Z
         }
 
 
+        /// <summary>
+        /// The node returns elements grouped by intersection
+        /// </summary>
+        /// <param name="elements">Elements for grouping.</param>
+        /// <returns>Groups of elements</returns>
+        /// <search>
+        /// elements, groups, intersection
+        /// </search> 
+        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
         public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
         {
 
@@ -82,6 +93,15 @@ namespace JetPack_Z
         }
 
 
+        /// <summary>
+        /// The node returns "true" if family instance is flipped.
+        /// </summary>
+        /// <param name="familyInstance">Family instance for flipping test.</param>
+        /// <returns>Is flipped</returns>
+        /// <search>
+        /// family, instance, test, flipped
+        /// </search> 
+        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
         public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
@@ -92,6 +112,15 @@ namespace JetPack_Z
         }
 
 
+        /// <summary>
+        /// The node returns all elements from active selection in Revit application
+        /// </summary>
+        /// <param name="toggle">Switch for update selection.</param>
+        /// <returns>Elements</returns>
+        /// <search>
+        /// elements, from, active, selection
+        /// </search>
+        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
         public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
         {
 
@@ -102,6 +131,36 @@ namespace JetPack_Z
 
         }
 
+    }
+}
+
+
+namespace Geometry.Points
+{
+    /// <summary>
+    /// The Point class.
+    /// </summary>
+    public class Point
+    {
+        private Point() { }
+
+        /// <summary>
+        /// The node returns "true" if the point inside the solid or on the surface and the distance to the geometry does not exceed the "tolerance" value.
+        /// </summary>
+        /// <param name="geometry">Geometry for search distance.</param>
+        /// <param name="point">Point</param>
+        /// <param name="tolerance">Extra search distance to geometry</param>
+        /// <returns>Inside or not Inside</returns>
+        /// <search>
+        /// inside, point, test, geometry
+        /// </search> 
+        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
+        public static Boolean IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, Double tolerance = 0.00)
+        {
+            Boolean isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);
+            return isIn;
+
+        }
     }
 }
 
