@@ -160,6 +160,35 @@ namespace Elements
 
         }
     }
+
+
+    /// <summary>
+    /// The WallType class.
+    /// </summary>
+    public class WallType
+    {
+        private WallType() { }
+
+        /// <summary>
+        /// Returns wall type name.
+        /// </summary>
+        /// <param name="wallType">Wall type</param>
+        /// <returns></returns>
+        /// <search>
+        /// wall, type, name
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        public static string FamilyName(Revit.Elements.WallType wallType)
+        {
+
+            // Unwrap input parameter
+            Autodesk.Revit.DB.WallType type = (Autodesk.Revit.DB.WallType)wallType.InternalElement;
+
+            return type.FamilyName;
+
+        }
+
+    }
 }
 
 

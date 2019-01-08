@@ -93,6 +93,9 @@
   <ItemGroup>
     <Content Include="Resources\Selection.Get.AllElementsFromActiveSelection.Large.png" />
     <Content Include="Resources\Selection.Get.AllElementsFromActiveSelection.Small.png" />
+    <Content Include="Resources\Selection.Set.Selection.Large.png" />
+    <Content Include="Resources\DefaultCustomNode.Small.png" />
+    <Content Include="Resources\Selection.Set.Selection.Small.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
