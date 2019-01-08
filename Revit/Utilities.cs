@@ -16,10 +16,11 @@ using Revit.Elements;
 using Autodesk.DesignScript.Geometry;
 using Autodesk.DesignScript.Runtime;
 
-namespace Utilities
+
+namespace Elements
 {
     /// <summary>
-    /// The Utilities class.
+    /// The Element class.
     /// </summary>
     public class Element
     {
@@ -92,7 +93,15 @@ namespace Utilities
             return outputGroups;
 
         }
+    }
 
+
+    /// <summary>
+    /// The FamilyInstance class.
+    /// </summary>
+    public class FamilyInstance
+    {
+        private FamilyInstance() { }
 
         /// <summary>
         /// The node returns "true" if family instance is flipped.
@@ -150,6 +159,19 @@ namespace Utilities
             };
 
         }
+    }
+}
+
+
+namespace Selection
+{
+    /// <summary>
+    /// The Get Selection class.
+    /// </summary>
+    public class Get
+    {
+
+        private Get() { }
 
 
         /// <summary>
@@ -168,6 +190,53 @@ namespace Utilities
             ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
 
             return from id in ids select uiDocument.Document.GetElement(id).ToDSType(true);
+
+        }
+
+    }
+
+    /// <summary>
+    /// The Set Selection class.
+    /// </summary>
+    public class Set
+    {
+
+        private Set() { }
+
+        //Element.SetSelection
+        //
+        //elems = UnwrapElement(IN[0])
+
+        //elemIds = []
+        //nErrors = 0
+
+        //for elem in elems:
+        //	try:
+        //		elemIds.append(elem.Id)
+        //    except AttributeError:
+        //		nErrors += 1
+        //		pass
+
+        //uidoc = DocumentManager.Instance.CurrentUIDocument
+        //uidoc.Selection.SetElementIds(List[ElementId](elemIds))
+
+        //# Just for fun - give it to the output!
+        //OUT = "{0} selected elements, {1} errors".format(len(elemIds), nErrors)
+
+        /// <summary>
+        /// Set selection in Revit application by input elements
+        /// </summary>
+        /// <param name="elements">Elements for seting selection.</param>
+        /// <returns></returns>
+        /// <search>
+        /// elements, set, selection
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        public static void SetSelection(Revit.Elements.Element[] elements)
+        {
+
+            //UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
+            //ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
 
         }
 
@@ -203,5 +272,3 @@ namespace Geometry
         }
     }
 }
-
-
