@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="JetPackZT.Elements.Element.Large" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="Selection.Get.AllElementsFromActiveSelection.Large" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAIAAABMXPacAAAAIGNIUk0AAIcbAACL/wABDCYAAHagAABc
         JwABClAAADiHAAAaIXx8w9IAAAAJcEhZcwAACxMAAAsTAQCanBgAAAEeSURBVHhe7dFBDQAwCACx2ZlP
@@ -129,7 +129,7 @@
         gJiAmICYgJiAmICYgJiAmICYgJiAmICYgNTsAbHPBc6oMnVtAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="JetPackZT.Elements.Element.Small" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="Selection.Get.AllElementsFromActiveSelection.Small" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAIGNIUk0AAIcbAACL/wABDCYAAHagAABc
         JwABClAAADiHAAAaIXx8w9IAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAySURBVEhL7c0xEQAgDAAx7OCz
