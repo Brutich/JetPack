@@ -93,6 +93,27 @@ namespace Elements
             return outputGroups;
 
         }
+
+
+        /// <summary>
+        /// The node returns true if element is hidden on view
+        /// </summary>
+        /// <param name="element">Elements for test.</param>
+        /// <param name="view">View.</param>
+        /// <returns>If True element hidden</returns>
+        /// <search>
+        /// element, hidden, on, view
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        public static bool IsHiddenOnView(Revit.Elements.Element element, Revit.Elements.Views.View view)
+        {
+            // Unwrap elements
+            Autodesk.Revit.DB.Element elem = element.InternalElement;
+            Autodesk.Revit.DB.View inputView = (Autodesk.Revit.DB.View)view.InternalElement;
+
+            return elem.IsHidden(inputView);
+        }
+
     }
 
 
@@ -212,7 +233,7 @@ namespace Selection
         /// elements, from, active, selection
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
-        public static IEnumerable<Revit.Elements.Element> SelectedElements(bool toggle)
+        public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
         {
 
             UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
