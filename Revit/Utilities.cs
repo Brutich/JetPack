@@ -204,7 +204,7 @@ namespace Selection
 
 
         /// <summary>
-        /// The node returns all elements from active selection in Revit application
+        /// The node returns all elements from active selection in Revit document.
         /// </summary>
         /// <param name="toggle">Switch for update selection.</param>
         /// <returns>Elements</returns>
@@ -212,13 +212,54 @@ namespace Selection
         /// elements, from, active, selection
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
-        public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
+        public static IEnumerable<Revit.Elements.Element> SelectedElements(bool toggle)
         {
 
             UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
             ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
 
             return from id in ids select uiDocument.Document.GetElement(id).ToDSType(true);
+
+        }
+        
+
+        /// <summary>
+        /// The node returns all Failure Messages from active Revit document.
+        /// </summary>
+        /// <param name="toggle">Switch for update.</param>
+        /// <returns></returns>
+        /// <search>
+        /// warnings, elements, from, failure, messages
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [MultiReturn("Descriptions", "Elements", "Failure Messages")]
+        public static Dictionary<string, object> Warnings(bool toggle)
+        {
+
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+            IList<Autodesk.Revit.DB.FailureMessage> warnings = document.GetWarnings();
+
+            List<string> descriptions = new List<string>();
+            List<FailureDefinitionId> failureDefinitionId = new List<FailureDefinitionId>();
+            List<object> elements = new List<object>();
+
+            foreach (Autodesk.Revit.DB.FailureMessage w in warnings)
+            {
+                descriptions.Add(w.GetDescriptionText());
+                failureDefinitionId.Add(w.GetFailureDefinitionId());
+                List<Revit.Elements.Element> elems = new List<Revit.Elements.Element>();
+                foreach (ElementId id in w.GetFailingElements())
+                    elems.Add(document.GetElement(id).ToDSType(true));
+
+                elements.Add(elems);
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "Descriptions", descriptions},
+                { "Elements", elements},
+                { "Failure Messages", warnings}
+            };
 
         }
 
