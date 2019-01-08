@@ -4,6 +4,7 @@
     <name>JetPackZT</name>
   </assembly>
   <namespaces>
+    <!--Remap Namespaces-->
     <namespace name="Elements">
       <category>JetPack.Elements</category>
     </namespace>
@@ -14,4 +15,9 @@
       <category>JetPack.Geometry</category>
     </namespace>
   </namespaces>
+  <classes>
+    <!--Remap Class Names-->
+    <class name="Selection.Set" shortname="Set"/>
+    <class name="JetPack.Selection.Set" shortname="Set"/>
+  </classes>
 </doc>
