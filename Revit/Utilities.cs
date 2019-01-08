@@ -203,40 +203,45 @@ namespace Selection
 
         private Set() { }
 
-        //Element.SetSelection
-        //
-        //elems = UnwrapElement(IN[0])
+        /* Python realisation
+        
+        elems = UnwrapElement(IN[0])
 
-        //elemIds = []
-        //nErrors = 0
+        elemIds = []
+        nErrors = 0
 
-        //for elem in elems:
-        //	try:
-        //		elemIds.append(elem.Id)
-        //    except AttributeError:
-        //		nErrors += 1
-        //		pass
+        for elem in elems:
+        	try:
+        		elemIds.append(elem.Id)
+            except AttributeError:
+        		nErrors += 1
+        		pass
 
-        //uidoc = DocumentManager.Instance.CurrentUIDocument
-        //uidoc.Selection.SetElementIds(List[ElementId](elemIds))
+        uidoc = DocumentManager.Instance.CurrentUIDocument
+        uidoc.Selection.SetElementIds(List[ElementId](elemIds))
 
-        //# Just for fun - give it to the output!
-        //OUT = "{0} selected elements, {1} errors".format(len(elemIds), nErrors)
+        # Just for fun - give it to the output!
+        OUT = "{0} selected elements, {1} errors".format(len(elemIds), nErrors)
+        */
 
         /// <summary>
         /// Set selection in Revit application by input elements
         /// </summary>
-        /// <param name="elements">Elements for seting selection.</param>
+        /// <param name="elements">Elements for setting selection.</param>
         /// <returns></returns>
         /// <search>
         /// elements, set, selection
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
-        public static void SetSelection(Revit.Elements.Element[] elements)
+        public static void Selection(Revit.Elements.Element[] elements)
         {
+            // List of unwrapped Dynamo element Ids
+            List<ElementId> elementIds = new List<ElementId>();
+            foreach (Revit.Elements.Element e in elements)
+                elementIds.Add(e.InternalElement.Id);
 
-            //UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
-            //ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
+            UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
+            uiDocument.Selection.SetElementIds(elementIds);
 
         }
 
