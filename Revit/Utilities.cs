@@ -195,6 +195,7 @@ namespace Selection
 
     }
 
+
     /// <summary>
     /// The Set Selection class.
     /// </summary>
@@ -203,26 +204,6 @@ namespace Selection
 
         private Set() { }
 
-        /* Python realisation
-        
-        elems = UnwrapElement(IN[0])
-
-        elemIds = []
-        nErrors = 0
-
-        for elem in elems:
-        	try:
-        		elemIds.append(elem.Id)
-            except AttributeError:
-        		nErrors += 1
-        		pass
-
-        uidoc = DocumentManager.Instance.CurrentUIDocument
-        uidoc.Selection.SetElementIds(List[ElementId](elemIds))
-
-        # Just for fun - give it to the output!
-        OUT = "{0} selected elements, {1} errors".format(len(elemIds), nErrors)
-        */
 
         /// <summary>
         /// Set selection in Revit application by input elements
@@ -268,7 +249,7 @@ namespace Geometry
         /// <search>
         /// inside, point, test, geometry
         /// </search> 
-        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
+        [IsVisibleInDynamoLibrary(true)]
         public static bool IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, double tolerance = 0.00)
         {
             bool isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);

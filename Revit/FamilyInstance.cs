@@ -1,4 +1,4 @@
-﻿namespace JetPack_Z
+﻿namespace JetPackZT
 {
     /// <summary>
     /// The FamilyInstance2 class.
