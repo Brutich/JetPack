@@ -16,6 +16,8 @@ using Revit.Elements;
 using Autodesk.DesignScript.Geometry;
 using Autodesk.DesignScript.Runtime;
 
+using Dynamo.Graph.Nodes;
+
 
 namespace Elements
 {
@@ -105,6 +107,7 @@ namespace Elements
         /// element, hidden, on, view
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
         public static bool IsHiddenOnView(Revit.Elements.Element element, Revit.Elements.Views.View view)
         {
             // Unwrap elements
@@ -122,6 +125,7 @@ namespace Elements
     /// </summary>
     public class FamilyInstance
     {
+
         private FamilyInstance() { }
 
         /// <summary>
@@ -133,6 +137,7 @@ namespace Elements
         /// family, instance, test, flipped
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
         public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
@@ -180,6 +185,7 @@ namespace Elements
             };
 
         }
+
     }
 
 
@@ -188,6 +194,7 @@ namespace Elements
     /// </summary>
     public class WallType
     {
+
         private WallType() { }
 
         /// <summary>
@@ -199,6 +206,7 @@ namespace Elements
         /// wall, type, name
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
         public static string FamilyName(Revit.Elements.WallType wallType)
         {
 
@@ -328,6 +336,7 @@ namespace Geometry
     /// </summary>
     public class Point
     {
+
         private Point() { }
 
         /// <summary>
@@ -341,6 +350,7 @@ namespace Geometry
         /// inside, point, test, geometry
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
         public static bool IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, double tolerance = 0.00)
         {
             bool isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);

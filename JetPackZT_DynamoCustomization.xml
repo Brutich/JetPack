@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>JetPackZT</name>
+  </assembly>
+  <namespaces>
+    <namespace name="Elements">
+      <category>JetPack.Elements</category>
+    </namespace>
+	  <namespace name="Selection">
+      <category>JetPack.Selection</category>
+    </namespace>
+    <namespace name="Geometry">
+      <category>JetPack.Geometry</category>
+    </namespace>
+  </namespaces>
+</doc>
