@@ -241,6 +241,7 @@ namespace Selection
         /// elements, from, active, selection
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
+        [NodeName("All Elements From Active Selection")]
         public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
         {
 

@@ -15,9 +15,4 @@
       <category>JetPack.Geometry</category>
     </namespace>
   </namespaces>
-  <classes>
-    <!--Remap Class Names-->
-    <class name="Selection.Set" shortname="Set"/>
-    <class name="JetPack.Selection.Set" shortname="Set"/>
-  </classes>
 </doc>
