@@ -14,6 +14,7 @@ using Autodesk.Revit.Attributes;
 using RevitServices.Persistence;
 using Revit.Elements;
 using Autodesk.DesignScript.Geometry;
+using Autodesk.DesignScript.Runtime;
 
 namespace Utilities
 {
@@ -55,7 +56,7 @@ namespace Utilities
         /// <search>
         /// elements, groups, intersection
         /// </search> 
-        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
+        [IsVisibleInDynamoLibrary(true)]
         public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
         {
 
@@ -101,13 +102,52 @@ namespace Utilities
         /// <search>
         /// family, instance, test, flipped
         /// </search> 
-        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
+        [IsVisibleInDynamoLibrary(true)]
         public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
             Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
 
             return instance.HandFlipped ^ instance.FacingFlipped;
+
+        }
+
+
+        /// <summary>
+        /// Changes the type of family instance to another. It may be necessary to perform inside the transaction body.
+        /// </summary>
+        /// <param name="familyInstance">Family instance for changing type.</param>
+        /// <param name="familyType">Another family type.</param>
+        /// <returns></returns>
+        /// <search>
+        /// change, type, family, instance
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [MultiReturn("Family Instance", "Report")]
+        public static Dictionary<string, object> ChangeType(Revit.Elements.FamilyInstance familyInstance, Revit.Elements.FamilyType familyType)
+        {
+
+            // Unwrap input parameters
+            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            Autodesk.Revit.DB.Element anotherType = familyType.InternalElement;
+
+            string report = "";
+
+            try
+            {
+                instance.ChangeTypeId(anotherType.Id);
+                report = "Successfully";
+            }
+            catch (Exception e)
+            {
+                report = $"Error: {e}";
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "Family Instance", instance},
+                { "Report", report}
+            };
 
         }
 
@@ -120,7 +160,7 @@ namespace Utilities
         /// <search>
         /// elements, from, active, selection
         /// </search>
-        [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
+        [IsVisibleInDynamoLibrary(true)]
         public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
         {
 
@@ -135,7 +175,7 @@ namespace Utilities
 }
 
 
-namespace Geometry.Points
+namespace Geometry
 {
     /// <summary>
     /// The Point class.
@@ -155,9 +195,9 @@ namespace Geometry.Points
         /// inside, point, test, geometry
         /// </search> 
         [Autodesk.DesignScript.Runtime.IsVisibleInDynamoLibrary(true)]
-        public static Boolean IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, Double tolerance = 0.00)
+        public static bool IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, double tolerance = 0.00)
         {
-            Boolean isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);
+            bool isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);
             return isIn;
 
         }

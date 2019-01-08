@@ -1,5 +1,8 @@
 ﻿namespace JetPack_Z
 {
+    /// <summary>
+    /// The FamilyInstance2 class.
+    /// </summary>
     class FamilyInstance2
     {
         private FamilyInstance2() { }
