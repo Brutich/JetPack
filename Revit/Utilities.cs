@@ -352,8 +352,14 @@ namespace Utilities
         [NodeCategory("Query")]
         public static object BySolidIntersection(Autodesk.DesignScript.Geometry.Solid solid, Revit.Elements.Element[] elements)
         {
+            // Convert Proto to Revit
+            Autodesk.Revit.DB.Solid unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
 
-            Autodesk.Revit.DB.Solid unionSolid = solid.ToRevitType(TessellatedShapeBuilderTarget.Solid).First() as Autodesk.Revit.DB.Solid;
+            /*
+            TessellatedShapeBuilderTarget target = TessellatedShapeBuilderTarget.Solid;
+            TessellatedShapeBuilderFallback fallback = TessellatedShapeBuilderFallback.Salvage;
+            Autodesk.Revit.DB.Solid unionSolid = solid.ToRevitType(target, fallback, null, true).First() as Autodesk.Revit.DB.Solid;
+            */
 
             /*
             IList<GeometryObject> geometries = solid.ToRevitType(TessellatedShapeBuilderTarget.Solid);
@@ -380,12 +386,11 @@ namespace Utilities
                 }
             }
             */
-
+            
             // List of unwrapped Dynamo element Ids
             List<ElementId> elementIds = new List<ElementId>();
             foreach (Revit.Elements.Element e in elements)
                 elementIds.Add(e.InternalElement.Id);
-
 
             // Collect intersected elements
             FilteredElementCollector сollector = new FilteredElementCollector(document, elementIds);
@@ -396,6 +401,7 @@ namespace Utilities
             colectedElements.ForEach(c => c.ToDSType(true));
 
             return colectedElements;
+
         }
     }
 }
