@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region Namespaces
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
-using RevitServices.Persistence;
 using Revit.Elements;
+using Revit.GeometryConversion;
+using RevitServices.Persistence;
 using Autodesk.DesignScript.Geometry;
 using Autodesk.DesignScript.Runtime;
-
 using Dynamo.Graph.Nodes;
-
+#endregion // Namespaces
 
 namespace Elements
 {
@@ -38,7 +39,9 @@ namespace Elements
             // Collect intersected elem IDs
             FilteredElementCollector localCollector = new FilteredElementCollector(document, elementIds);
             Autodesk.Revit.DB.Element element = document.GetElement(element_id);
-            List<ElementId> colectedElementIds = (List<ElementId>)(localCollector.WherePasses(new ElementIntersectsElementFilter(element)).ToElementIds());
+            List<ElementId> colectedElementIds = localCollector
+                .WherePasses(new ElementIntersectsElementFilter(element))
+                .ToElementIds() as List<ElementId>;
 
             // Remove initial Element ID from element_ids
             // and revome filtered element IDs from element_ids
@@ -163,7 +166,7 @@ namespace Elements
         {
 
             // Unwrap input parameters
-            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             Autodesk.Revit.DB.Element anotherType = familyType.InternalElement;
 
             string report = "";
@@ -183,9 +186,7 @@ namespace Elements
                 { "Family Instance", instance},
                 { "Report", report}
             };
-
         }
-
     }
 
 
@@ -216,7 +217,6 @@ namespace Elements
             return type.FamilyName;
 
         }
-
     }
 }
 
@@ -290,9 +290,7 @@ namespace Selection
                 { "Elements", elements},
                 { "Failure Messages", warnings}
             };
-
         }
-
     }
 
 
@@ -325,7 +323,80 @@ namespace Selection
             uiDocument.Selection.SetElementIds(elementIds);
 
         }
+    }
+}
 
+
+namespace Utilities
+{
+    /// <summary>
+    /// The Filter class.
+    /// </summary>
+    public class Filter
+    {
+
+        private Filter() { }
+
+        private static Document document = DocumentManager.Instance.CurrentDBDocument;
+
+        /// <summary>
+        /// The node returns "true" if the point inside the solid or on the surface and the distance to the geometry does not exceed the "tolerance" value.
+        /// </summary>
+        /// <param name="solid"></param>
+        /// <param name="elements"></param>
+        /// <returns>Inside or not Inside</returns>
+        /// <search>
+        /// inside, point, test, geometry
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
+        public static object BySolidIntersection(Autodesk.DesignScript.Geometry.Solid solid, Revit.Elements.Element[] elements)
+        {
+
+            Autodesk.Revit.DB.Solid unionSolid = solid.ToRevitType(TessellatedShapeBuilderTarget.Solid).First() as Autodesk.Revit.DB.Solid;
+
+            /*
+            IList<GeometryObject> geometries = solid.ToRevitType(TessellatedShapeBuilderTarget.Solid);
+            
+            Autodesk.Revit.DB.Solid unionSolid = null;
+            foreach (GeometryObject obj in geometries)
+            {
+                Autodesk.Revit.DB.Solid _solid = obj as Autodesk.Revit.DB.Solid;
+
+                if (null != _solid
+                  && 0 < _solid.Faces.Size)
+                {
+                    if (null == unionSolid)
+                    {
+                        unionSolid = _solid;
+                    }
+                    else
+                    {
+                        unionSolid = BooleanOperationsUtils.ExecuteBooleanOperation(
+                            unionSolid,
+                            _solid,
+                            BooleanOperationsType.Union);
+                    }
+                }
+            }
+            */
+
+            // List of unwrapped Dynamo element Ids
+            List<ElementId> elementIds = new List<ElementId>();
+            foreach (Revit.Elements.Element e in elements)
+                elementIds.Add(e.InternalElement.Id);
+
+
+            // Collect intersected elements
+            FilteredElementCollector сollector = new FilteredElementCollector(document, elementIds);
+            List<Autodesk.Revit.DB.Element> colectedElements = сollector
+                .WherePasses(new ElementIntersectsSolidFilter(unionSolid))
+                .ToElements() as List<Autodesk.Revit.DB.Element>;
+
+            colectedElements.ForEach(c => c.ToDSType(true));
+
+            return colectedElements;
+        }
     }
 }
 
