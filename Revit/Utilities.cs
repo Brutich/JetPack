@@ -344,9 +344,9 @@ namespace Utilities
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="solid"></param>
-        /// <returns>Inside or not Inside</returns>
+        /// <returns>Finded elements</returns>
         /// <search>
-        /// inside, point, test, geometry
+        /// filter, find, elements, intersect, solid, geometry
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
@@ -406,13 +406,13 @@ namespace Utilities
 
 
         /// <summary>
-        /// A filter to find elements that intersect the given solid geometry.
+        /// A filter to find elements that intersect the given element.
         /// </summary>
         /// <param name="elements"></param>
         /// <param name="element"></param>
-        /// <returns>Inside or not Inside</returns>
+        /// <returns>Finded elements</returns>
         /// <search>
-        /// inside, point, test, geometry
+        /// filter, find, elements, intersect, element
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
@@ -443,51 +443,6 @@ namespace Utilities
             return outputElements;
 
         }
-
-
-
-        /// <summary>
-        /// A filter to find elements that intersect the given solid geometry.
-        /// </summary>
-        /// <param name="elements"></param>
-        /// <param name="room"></param>
-        /// <returns>Inside or not Inside</returns>
-        /// <search>
-        /// inside, point, test, geometry
-        /// </search> 
-        [IsVisibleInDynamoLibrary(true)]
-        [NodeCategory("Query")]
-        public static List<Revit.Elements.Element> ByRoomIntersection(Revit.Elements.Element[] elements, Revit.Elements.Room room)
-        {
-
-            Autodesk.DesignScript.Geometry.Solid geometry = room.Geometry().First() as Autodesk.DesignScript.Geometry.Solid;
-
-            // Convert Proto to Revit
-            Autodesk.Revit.DB.Solid solid = DynamoToRevitBRep.ToRevitType(geometry) as Autodesk.Revit.DB.Solid;
-
-            // List of unwrapped Dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
-            foreach (Revit.Elements.Element e in elements)
-                elementIds.Add(e.InternalElement.Id);
-
-            // Collect intersected elements
-            FilteredElementCollector сollector = new FilteredElementCollector(document, elementIds);
-            List<Autodesk.Revit.DB.Element> colectedElements = сollector
-                .WherePasses(new ElementIntersectsSolidFilter(solid))
-                .ToElements() as List<Autodesk.Revit.DB.Element>;
-
-
-            List<Revit.Elements.Element> outputElements = new List<Revit.Elements.Element>();
-
-            foreach (Autodesk.Revit.DB.Element c in colectedElements)
-            {
-                outputElements.Add(c.ToDSType(true));
-            }
-            
-            return outputElements;
-            
-        }
-
     }
 }
 
