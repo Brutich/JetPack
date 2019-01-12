@@ -302,7 +302,6 @@ namespace Selection
 
         private Set() { }
 
-
         /// <summary>
         /// Set selection in Revit application by input elements
         /// </summary>
@@ -341,9 +340,10 @@ namespace Utilities
 
         /// <summary>
         /// A filter to find elements that intersect the given solid geometry.
+        /// The input solid used for this filter can be obtained from an existing element.
         /// </summary>
         /// <param name="elements"></param>
-        /// <param name="solid"></param>
+        /// <param name="solid">Input solid</param>
         /// <returns>Finded elements</returns>
         /// <search>
         /// filter, find, elements, intersect, solid, geometry
@@ -354,32 +354,6 @@ namespace Utilities
         {
             // Convert Proto to Revit
             Autodesk.Revit.DB.Solid unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
-
-            /* Not needed
-            IList<GeometryObject> geometries = solid.ToRevitType(TessellatedShapeBuilderTarget.Solid);
-            
-            Autodesk.Revit.DB.Solid unionSolid = null;
-            foreach (GeometryObject obj in geometries)
-            {
-                Autodesk.Revit.DB.Solid _solid = obj as Autodesk.Revit.DB.Solid;
-
-                if (null != _solid
-                  && 0 < _solid.Faces.Size)
-                {
-                    if (null == unionSolid)
-                    {
-                        unionSolid = _solid;
-                    }
-                    else
-                    {
-                        unionSolid = BooleanOperationsUtils.ExecuteBooleanOperation(
-                            unionSolid,
-                            _solid,
-                            BooleanOperationsType.Union);
-                    }
-                }
-            }
-            */
             
             // List of unwrapped Dynamo element Ids
             List<ElementId> elementIds = new List<ElementId>();
@@ -391,7 +365,6 @@ namespace Utilities
             List<Autodesk.Revit.DB.Element> colectedElements = сollector
                 .WherePasses(new ElementIntersectsSolidFilter(unionSolid))
                 .ToElements() as List<Autodesk.Revit.DB.Element>;
-
 
             List<Revit.Elements.Element> outputElements = new List<Revit.Elements.Element>();
 
@@ -447,9 +420,6 @@ namespace Utilities
 }
 
     
-
-
-
 namespace Geometry
 {
     /// <summary>
