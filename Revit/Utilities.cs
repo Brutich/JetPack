@@ -156,7 +156,9 @@ namespace Elements
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
         [MultiReturn("Family Instance", "Report")]
-        public static Dictionary<string, object> ChangeType(Revit.Elements.FamilyInstance familyInstance, Revit.Elements.FamilyType familyType)
+        public static Dictionary<string, object> ChangeType(
+            Revit.Elements.FamilyInstance familyInstance,
+            Revit.Elements.FamilyType familyType)
         {
 
             // Unwrap input parameters
@@ -282,7 +284,78 @@ namespace Selection
                 { "Failure Messages", warnings}
             };
         }
+
+
+        // All Elements by Workset
+        /// <summary>
+        /// The node returns all elements by workset.
+        /// </summary>
+        /// <param name="toggle">Switch for update selection.</param>
+        /// <param name="workset"></param>
+        /// <returns>Elements</returns>
+        /// <search>
+        /// elements, from, workset, selection
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeName("All Elements From Workset")]
+        public static IEnumerable<Revit.Elements.Element> AllElementsByWorkset(Workset workset)
+        {
+
+            Document doc = DocumentManager.Instance.CurrentDBDocument;
+
+            FilteredElementCollector elementCollector = new FilteredElementCollector(doc);
+
+            IList<Autodesk.Revit.DB.Element> elements = elementCollector
+                .WherePasses(new ElementWorksetFilter(workset.Id))
+                .ToElements();
+
+            List<Revit.Elements.Element> outputData = new List<Revit.Elements.Element>();
+            foreach (Autodesk.Revit.DB.Element elem in elements)
+                outputData.Add(elem.ToDSType(true));
+
+            return outputData;
+
+        }
+
+
+        /// <summary>
+        /// The node returns all worksets from active Revit document.
+        /// </summary>
+        /// <param name="toggle">Switch for update.</param>
+        /// <returns></returns>
+        /// <search>
+        /// worksets, elements
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [MultiReturn("Kinds", "Names", "IDs", "Worksets")]
+        public static Dictionary<string, object> Worksets(bool toggle)
+        {
+
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+
+            FilteredWorksetCollector worksets = new FilteredWorksetCollector(document);
+
+            List<string> wsKindes = new List<string>();
+            List<string> wsNames = new List<string>();
+            List<int> wsIds = new List<int>();
+
+            foreach (Autodesk.Revit.DB.Workset ws in worksets)
+            {
+                wsKindes.Add(ws.Kind.ToString());
+                wsNames.Add(ws.Name);
+                wsIds.Add(ws.Id.IntegerValue);
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "Kinds", wsKindes},
+                { "Names", wsNames},
+                { "IDs", wsIds},
+                { "Worksets", worksets}
+            };
+        }
     }
+
 
 
     /// <summary>
