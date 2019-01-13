@@ -14,5 +14,8 @@
     <namespace name="Geometry">
       <category>JetPack.Geometry</category>
     </namespace>
+    <namespace name="Utilities">
+      <category>JetPack.Utilities</category>
+    </namespace>
   </namespaces>
 </doc>

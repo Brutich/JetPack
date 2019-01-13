@@ -15,6 +15,7 @@ using Autodesk.Revit.Attributes;
 using Revit.Elements;
 using Revit.GeometryConversion;
 using RevitServices.Persistence;
+using RevitServices.Transactions;
 using Autodesk.DesignScript.Geometry;
 using Autodesk.DesignScript.Runtime;
 using Dynamo.Graph.Nodes;
@@ -32,72 +33,6 @@ namespace Elements
 
 
         private static Document document = DocumentManager.Instance.CurrentDBDocument;
-
-
-        private static List<ElementId> Intersect(ElementId element_id, ref List<ElementId> elementIds)
-        {
-            // Collect intersected elem IDs
-            FilteredElementCollector localCollector = new FilteredElementCollector(document, elementIds);
-            Autodesk.Revit.DB.Element element = document.GetElement(element_id);
-            List<ElementId> colectedElementIds = localCollector
-                .WherePasses(new ElementIntersectsElementFilter(element))
-                .ToElementIds() as List<ElementId>;
-
-            // Remove initial Element ID from element_ids
-            // and revome filtered element IDs from element_ids
-            elementIds.Remove(element_id);
-            foreach (ElementId id in colectedElementIds)
-                elementIds.Remove(id);
-
-            return colectedElementIds;
-
-        }
-
-
-        /// <summary>
-        /// The node returns elements grouped by intersection
-        /// </summary>
-        /// <param name="elements">Elements for grouping.</param>
-        /// <returns>Groups of elements</returns>
-        /// <search>
-        /// elements, groups, intersection
-        /// </search> 
-        [IsVisibleInDynamoLibrary(true)]
-        public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
-        {
-
-            List<IEnumerable<Revit.Elements.Element>> outputGroups = new List<IEnumerable<Revit.Elements.Element>>();
-
-            // List of unwrapped dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
-            foreach (Revit.Elements.Element e in elements)
-                elementIds.Add(e.InternalElement.Id);
-
-            while (elementIds.Count > 0)
-            {
-                ElementId elemId = elementIds[0];
-
-                List<ElementId> grouped = new List<ElementId>();
-                grouped.Add(elemId);
-
-                List<ElementId> colectedElemIds = Intersect(elemId, ref elementIds);
-                grouped.AddRange(colectedElemIds);
-
-                while ((colectedElemIds.Count > 0) && (elementIds.Count > 0))
-                {
-                    List<ElementId> intersectionIds = Intersect(colectedElemIds[0], ref elementIds);
-                    grouped.AddRange(intersectionIds);
-                    colectedElemIds.AddRange(intersectionIds);
-                    colectedElemIds.Remove(colectedElemIds[0]);
-                }
-
-                // Add list of wrapped to Dynamo type elements
-                outputGroups.Add(from id in grouped select document.GetElement(id).ToDSType(true));
-            }
-
-            return outputGroups;
-
-        }
 
 
         /// <summary>
@@ -120,6 +55,27 @@ namespace Elements
             return elem.IsHidden(inputView);
         }
 
+
+
+        /// <summary>
+        /// Sets new name. It may be necessary to perform inside the transaction.
+        /// </summary>
+        /// <param name="element">Element for renaming.</param>
+        /// <param name="name">New name.</param>
+        /// <returns>Renamed element</returns>
+        /// <search>
+        /// element, set, name, change
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        public static Revit.Elements.Element SetName(Revit.Elements.Element element, string name)
+        {
+            // Unwrap elements
+            Autodesk.Revit.DB.Element elem = element.InternalElement;
+
+            elem.Name = name;
+
+            return elem.ToDSType(true);
+        }
     }
 
 
@@ -148,6 +104,44 @@ namespace Elements
 
             return instance.HandFlipped ^ instance.FacingFlipped;
 
+        }
+
+
+        /// <summary>
+        /// The "To Room" set for the door or window in the last phase of the project.
+        /// </summary>
+        /// <param name="familyInstance">Door or window family instance.</param>
+        /// <returns>Room</returns>
+        /// <search>
+        /// to room, instance, door, window
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
+        public static Revit.Elements.Room ToRoom(Revit.Elements.FamilyInstance familyInstance)
+        {
+            // Unwrap element
+            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+
+            return instance.ToRoom.ToDSType(true) as Revit.Elements.Room;
+        }
+
+
+        /// <summary>
+        /// The "From Room" set for the door or window in the last phase of the project.
+        /// </summary>
+        /// <param name="familyInstance">Door or window family instance.</param>
+        /// <returns>Room</returns>
+        /// <search>
+        /// from room, instance, door, window
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
+        public static Revit.Elements.Room FromRoom(Revit.Elements.FamilyInstance familyInstance)
+        {
+            // Unwrap element
+            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+
+            return instance.FromRoom.ToDSType(true) as Revit.Elements.Room;
         }
 
 
@@ -211,10 +205,7 @@ namespace Elements
         public static string FamilyName(Revit.Elements.WallType wallType)
         {
 
-            // Unwrap input parameter
-            Autodesk.Revit.DB.WallType type = (Autodesk.Revit.DB.WallType)wallType.InternalElement;
-
-            return type.FamilyName;
+            return (wallType.InternalElement as Autodesk.Revit.DB.WallType).FamilyName;
 
         }
     }
@@ -329,14 +320,80 @@ namespace Selection
 namespace Utilities
 {
     /// <summary>
-    /// The Filter class.
+    /// The Elements class.
     /// </summary>
-    public class Filter
+    public class Elements
     {
 
-        private Filter() { }
+        private Elements() { }
 
         private static Document document = DocumentManager.Instance.CurrentDBDocument;
+
+        private static List<ElementId> Intersect(ElementId element_id, ref List<ElementId> elementIds)
+        {
+            // Collect intersected elem IDs
+            FilteredElementCollector localCollector = new FilteredElementCollector(document, elementIds);
+            Autodesk.Revit.DB.Element element = document.GetElement(element_id);
+            List<ElementId> colectedElementIds = localCollector
+                .WherePasses(new ElementIntersectsElementFilter(element))
+                .ToElementIds() as List<ElementId>;
+
+            // Remove initial Element ID from element_ids
+            // and revome filtered element IDs from element_ids
+            elementIds.Remove(element_id);
+            foreach (ElementId id in colectedElementIds)
+                elementIds.Remove(id);
+
+            return colectedElementIds;
+
+        }
+
+
+        /// <summary>
+        /// The node returns elements grouped by intersection
+        /// </summary>
+        /// <param name="elements">Elements for grouping.</param>
+        /// <returns>Groups of elements</returns>
+        /// <search>
+        /// elements, groups, intersection
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
+        {
+
+            List<IEnumerable<Revit.Elements.Element>> outputGroups = new List<IEnumerable<Revit.Elements.Element>>();
+
+            // List of unwrapped dynamo element Ids
+            List<ElementId> elementIds = new List<ElementId>();
+            foreach (Revit.Elements.Element e in elements)
+                elementIds.Add(e.InternalElement.Id);
+
+            while (elementIds.Count > 0)
+            {
+                ElementId elemId = elementIds[0];
+
+                List<ElementId> grouped = new List<ElementId>();
+                grouped.Add(elemId);
+
+                List<ElementId> colectedElemIds = Intersect(elemId, ref elementIds);
+                grouped.AddRange(colectedElemIds);
+
+                while ((colectedElemIds.Count > 0) && (elementIds.Count > 0))
+                {
+                    List<ElementId> intersectionIds = Intersect(colectedElemIds[0], ref elementIds);
+                    grouped.AddRange(intersectionIds);
+                    colectedElemIds.AddRange(intersectionIds);
+                    colectedElemIds.Remove(colectedElemIds[0]);
+                }
+
+                // Add list of wrapped to Dynamo type elements
+                outputGroups.Add(from id in grouped select document.GetElement(id).ToDSType(true));
+            }
+
+            return outputGroups;
+
+        }
+
 
         /// <summary>
         /// A filter to find elements that intersect the given solid geometry.
@@ -350,7 +407,7 @@ namespace Utilities
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static List<Revit.Elements.Element> BySolidIntersection(Revit.Elements.Element[] elements, Autodesk.DesignScript.Geometry.Solid solid)
+        public static List<Revit.Elements.Element> FilterBySolidIntersection(Revit.Elements.Element[] elements, Autodesk.DesignScript.Geometry.Solid solid)
         {
             // Convert Proto to Revit
             Autodesk.Revit.DB.Solid unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
@@ -389,7 +446,7 @@ namespace Utilities
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static List<Revit.Elements.Element> ByElementIntersection(Revit.Elements.Element[] elements, Revit.Elements.Element element)
+        public static List<Revit.Elements.Element> FilterByElementIntersection(Revit.Elements.Element[] elements, Revit.Elements.Element element)
         {
             // Convert Proto to Revit
             Autodesk.Revit.DB.Element operatorElement = element.InternalElement;
@@ -415,6 +472,32 @@ namespace Utilities
 
             return outputElements;
 
+        }
+
+
+        /// <summary>
+        /// Delete elements from the document with their dependencies
+        /// </summary>
+        /// <param name="elements">List of elements for deleting.</param>
+        /// <returns></returns>
+        /// <search>
+        /// delete, elements.
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        public static void Delete(Revit.Elements.Element[] elements)
+        {
+            // List of unwrapped Dynamo element Ids
+            List<ElementId> elementIds = new List<ElementId>();
+            foreach (Revit.Elements.Element e in elements)
+                elementIds.Add(e.InternalElement.Id);
+
+            // Transaction Start
+            TransactionManager.Instance.EnsureInTransaction(document);
+
+            document.Delete(elementIds);
+
+            //Transaction End
+            TransactionManager.Instance.TransactionTaskDone();
         }
     }
 }
@@ -444,8 +527,8 @@ namespace Geometry
         [NodeCategory("Query")]
         public static bool IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, double tolerance = 0.00)
         {
-            bool isIn = geometry.DistanceTo(point) <= Math.Abs(tolerance);
-            return isIn;
+            
+            return geometry.DistanceTo(point) <= Math.Abs(tolerance);
 
         }
     }
