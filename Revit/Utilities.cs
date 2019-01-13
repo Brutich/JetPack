@@ -21,6 +21,7 @@ using Autodesk.DesignScript.Runtime;
 using Dynamo.Graph.Nodes;
 #endregion // Namespaces
 
+
 namespace Elements
 {
     /// <summary>
@@ -290,7 +291,6 @@ namespace Selection
         /// <summary>
         /// The node returns all elements by workset.
         /// </summary>
-        /// <param name="toggle">Switch for update selection.</param>
         /// <param name="workset"></param>
         /// <returns>Elements</returns>
         /// <search>
