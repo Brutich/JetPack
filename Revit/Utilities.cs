@@ -192,11 +192,47 @@ namespace Elements
     /// </summary>
     public class WallType
     {
-
+        
         private WallType() { }
 
+
         /// <summary>
-        /// Returns wall type name.
+        /// Returns wall compound structure layers.
+        /// </summary>
+        /// <param name="wallType">Wall type</param>
+        /// <returns></returns>
+        /// <search>
+        /// wall, compound, structure, layers
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
+        public static List<Layer> GetLayers(Revit.Elements.WallType wallType)
+        {
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+
+            Autodesk.Revit.DB.WallType _wallType = wallType.InternalElement as Autodesk.Revit.DB.WallType;
+            CompoundStructure structure = _wallType.GetCompoundStructure();
+            int layerCount = structure.LayerCount;
+            int strMaterialInd = structure.StructuralMaterialIndex;
+
+            List<Layer> layers = new List<Layer>(); 
+
+            for (int i = 0; i < layerCount; i++)
+            {
+                layers.Add(new Layer(structure.GetLayerFunction(i).ToString(),
+                        document.GetElement(structure.GetMaterialId(i)) as Autodesk.Revit.DB.Material,
+                        structure.GetLayerWidth(i) * 304.8,
+                        i == strMaterialInd,
+                        structure.IsCoreLayer(i))
+                    );
+            }
+
+            return layers;
+        }
+
+
+        /// <summary>
+        /// Returns wall type name. Basic, curtain or stacked wall.
         /// </summary>
         /// <param name="wallType">Wall type</param>
         /// <returns></returns>
@@ -210,6 +246,56 @@ namespace Elements
 
             return (wallType.InternalElement as Autodesk.Revit.DB.WallType).FamilyName;
 
+        }
+
+    }
+
+    /// <summary>
+    /// The Wall Compound Structure Layer class.
+    /// </summary>
+    public class Layer
+    {
+        /// <summary>
+        /// The function of the layer.
+        /// </summary>
+        [NodeCategory("Query")]
+        public string Function { get; }
+
+        /// <summary>
+        /// Material of the layer.
+        /// </summary>
+        [NodeCategory("Query")]
+        public Autodesk.Revit.DB.Material Material { get; }
+
+        /// <summary>
+        /// Width of the layer.
+        /// </summary>
+        [NodeCategory("Query")]
+        public double Width { get; }
+
+        /// <summary>
+        /// Is layer structural?
+        /// </summary>
+        [NodeCategory("Query")]
+        public bool IsStructural { get; }
+
+        /// <summary>
+        /// Is layer core?
+        /// </summary>
+        [NodeCategory("Query")]
+        public bool IsCore { get; }
+
+        internal Layer(
+            string layerFunction,
+            Autodesk.Revit.DB.Material layerMaterial,
+            double layerThickness, bool isStructuralLayer,
+            bool isCoreLayer)
+        {
+            this.Function = layerFunction;
+            this.Material = layerMaterial;
+            this.Width = layerThickness;
+            this.IsStructural = isStructuralLayer;
+            this.IsCore = isCoreLayer;
         }
     }
 }
