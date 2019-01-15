@@ -662,33 +662,4 @@ namespace Utilities
 }
 
     
-namespace Geometry
-{
-    /// <summary>
-    /// The Point class.
-    /// </summary>
-    public class Point
-    {
 
-        private Point() { }
-
-        /// <summary>
-        /// The node returns "true" if the point inside the solid or on the surface and the distance to the geometry does not exceed the "tolerance" value.
-        /// </summary>
-        /// <param name="geometry">Geometry for search distance.</param>
-        /// <param name="point">Point</param>
-        /// <param name="tolerance">Extra search distance to geometry</param>
-        /// <returns>Inside or not Inside</returns>
-        /// <search>
-        /// inside, point, test, geometry
-        /// </search> 
-        [IsVisibleInDynamoLibrary(true)]
-        [NodeCategory("Query")]
-        public static bool IsInsideGeometry(Autodesk.DesignScript.Geometry.Point point, Autodesk.DesignScript.Geometry.Geometry geometry, double tolerance = 0.00)
-        {
-            
-            return geometry.DistanceTo(point) <= Math.Abs(tolerance);
-
-        }
-    }
-}
