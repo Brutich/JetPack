@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetPackZT", "JetPackZT.csproj", "{6A7C524A-AD63-4DF9-ADA9-525FD6B9881C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetBlue", "JetBlue.csproj", "{6A7C524A-AD63-4DF9-ADA9-525FD6B9881C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
