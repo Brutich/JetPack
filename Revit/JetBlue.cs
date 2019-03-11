@@ -189,12 +189,13 @@ namespace Elements
         /// <summary>
         /// Node to get the super component of current family instance.
         /// </summary>
-        /// <param name="familyInstance">Family instance for getting super component.</param>
+        /// <param name="familyInstance">Family instance for getting the super component.</param>
         /// <returns></returns>
         /// <search>
         /// super component, family, instance
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
         public static Revit.Elements.FamilyInstance SuperComponent(Revit.Elements.FamilyInstance familyInstance)
         {
 
