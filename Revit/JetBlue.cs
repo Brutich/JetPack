@@ -184,6 +184,28 @@ namespace Elements
                 { "Report", report}
             };
         }
+
+
+        /// <summary>
+        /// Node to get the super component of current family instance.
+        /// </summary>
+        /// <param name="familyInstance">Family instance for getting super component.</param>
+        /// <returns></returns>
+        /// <search>
+        /// super component, family, instance
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        public static Revit.Elements.FamilyInstance SuperComponent(Revit.Elements.FamilyInstance familyInstance)
+        {
+
+            // Unwrap input parameters
+            Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
+
+            Autodesk.Revit.DB.FamilyInstance superComponent = instance.SuperComponent as Autodesk.Revit.DB.FamilyInstance;
+
+            return superComponent.ToDSType(true) as Revit.Elements.FamilyInstance;
+
+        }
     }
 
 
