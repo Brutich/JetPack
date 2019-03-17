@@ -1,10 +1,5 @@
----
-description: Packages for Dynamo Visual Programming
----
-
 # JetPack
-
-## 
+Packages for Dynamo Visual Programming
 
 
 
