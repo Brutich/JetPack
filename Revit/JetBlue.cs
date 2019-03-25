@@ -273,6 +273,7 @@ namespace Elements
 
     }
 
+
     /// <summary>
     /// The Wall Compound Structure Layer class.
     /// </summary>
@@ -320,7 +321,10 @@ namespace Elements
             this.IsStructural = isStructuralLayer;
             this.IsCore = isCoreLayer;
         }
+
+
     }
+
 }
 
 
@@ -530,7 +534,7 @@ namespace Utilities
 
         }
 
-
+                     
         /// <summary>
         /// The node returns elements grouped by intersection
         /// </summary>
@@ -682,7 +686,42 @@ namespace Utilities
             TransactionManager.Instance.TransactionTaskDone();
         }
     }
+
+    /// <summary>
+    /// The FamilyInstance class.
+    /// </summary>
+    public class Room
+    {
+
+        private Room() { }
+
+        private static Document document = DocumentManager.Instance.CurrentDBDocument;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="room"></param>
+        /// <returns></returns>
+        /// <search>
+        /// room
+        /// </search> 
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeCategory("Query")]
+        public static IEnumerable<Autodesk.Revit.DB.FamilyInstance> Doors(Revit.Elements.Room room)
+        {
+            // Unwrap element
+            Autodesk.Revit.DB.Architecture.Room rm = room.InternalElement as Autodesk.Revit.DB.Architecture.Room;
+
+            FilteredElementCollector localCollector = new FilteredElementCollector(document);
+            List<Autodesk.Revit.DB.FamilyInstance> elements = localCollector.
+                OfCategory(BuiltInCategory.OST_Doors).
+                WhereElementIsNotElementType().
+                ToElements() as List<Autodesk.Revit.DB.FamilyInstance>;
+
+            return elements.Where(e => e.FromRoom == rm || e.ToRoom == rm);
+
+        }
+
+    }
 }
 
     
-
