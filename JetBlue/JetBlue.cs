@@ -153,8 +153,7 @@ namespace Elements
         /// change, type, family, instance
         /// </search>
         [IsVisibleInDynamoLibrary(true)]
-        [MultiReturn("Family Instance", "Report")]
-        public static Dictionary<string, object> ChangeType(
+        public static Revit.Elements.FamilyInstance ChangeType(
             Revit.Elements.FamilyInstance familyInstance,
             Revit.Elements.FamilyType familyType)
         {
@@ -163,23 +162,13 @@ namespace Elements
             Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             Autodesk.Revit.DB.Element anotherType = familyType.InternalElement;
 
-            string report = "";
+            TransactionManager.Instance.EnsureInTransaction(DocumentManager.Instance.CurrentDBDocument);
 
-            try
-            {
-                instance.ChangeTypeId(anotherType.Id);
-                report = "Successfully";
-            }
-            catch (Exception e)
-            {
-                report = $"Error: {e}";
-            }
+            instance.ChangeTypeId(anotherType.Id);
 
-            return new Dictionary<string, object>
-            {
-                { "Family Instance", instance},
-                { "Report", report}
-            };
+            TransactionManager.Instance.TransactionTaskDone();
+
+            return familyInstance;
         }
 
 
@@ -197,9 +186,8 @@ namespace Elements
         {
 
             // Unwrap input parameters
-            Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
-
-            Autodesk.Revit.DB.FamilyInstance superComponent = instance.SuperComponent as Autodesk.Revit.DB.FamilyInstance;
+            var instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
+            var superComponent = instance.SuperComponent as Autodesk.Revit.DB.FamilyInstance;
 
             return superComponent.ToDSType(true) as Revit.Elements.FamilyInstance;
 
@@ -553,7 +541,7 @@ namespace Utilities
             {
                 ElementId elemId = elementIds[0];
 
-                List<ElementId> grouped = new List<ElementId>();
+                var grouped = new List<ElementId>();
                 grouped.Add(elemId);
 
                 List<ElementId> colectedElemIds = Intersect(elemId, ref elementIds);
@@ -594,13 +582,12 @@ namespace Utilities
             Autodesk.Revit.DB.Solid unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
             
             // List of unwrapped Dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
+            var elementIds = new List<ElementId>();
             foreach (Revit.Elements.Element e in elements)
                 elementIds.Add(e.InternalElement.Id);
 
             // Collect intersected elements
-            FilteredElementCollector сollector = new FilteredElementCollector(document, elementIds);
-            List<Autodesk.Revit.DB.Element> colectedElements = сollector
+            var colectedElements = new FilteredElementCollector(document, elementIds)
                 .WherePasses(new ElementIntersectsSolidFilter(unionSolid))
                 .ToElements() as List<Autodesk.Revit.DB.Element>;
 
@@ -633,7 +620,7 @@ namespace Utilities
             Autodesk.Revit.DB.Element operatorElement = element.InternalElement;
 
             // List of unwrapped Dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
+            var elementIds = new List<ElementId>();
             foreach (Revit.Elements.Element e in elements)
                 elementIds.Add(e.InternalElement.Id);
 
@@ -706,8 +693,7 @@ namespace Utilities
             // Unwrap element
             Autodesk.Revit.DB.Architecture.Room rm = room.InternalElement as Autodesk.Revit.DB.Architecture.Room;
 
-            FilteredElementCollector localCollector = new FilteredElementCollector(document);
-            List<Autodesk.Revit.DB.FamilyInstance> elements = localCollector.
+            var elements = new FilteredElementCollector(document).
                 OfCategory(BuiltInCategory.OST_Doors).
                 WhereElementIsNotElementType().
                 ToElements() as List<Autodesk.Revit.DB.FamilyInstance>;

@@ -22,8 +22,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 
-# Do not exclude
+# Custom exclude
 JetPackToolkit/
+Tests/
 
 # Visual Studio 2015 cache/options directory
 .vs/
