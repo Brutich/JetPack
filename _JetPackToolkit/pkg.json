@@ -1,0 +1,18 @@
+{
+  "contains_binaries": true,
+  "contents": "",
+  "dependencies": [],
+  "description": "JetPack is built for Dynamo 2.0.x and Revit 2018+. Simple and powerful nodes. Please use this package instead of JetPack published earlier.",
+  "engine": "dynamo",
+  "engine_metadata": "",
+  "engine_version": "2.0.2.6833",
+  "file_hash": null,
+  "group": "JetPack",
+  "keywords": [ "set", "elements", "name", "delete", "deleting", "selection", "door", "handing", "wall", "type", "structure", "warnings", "worksets" ],
+  "license": "",
+  "name": "JetPackToolkit",
+  "node_libraries": [ "JetBlue.customization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "JetBlue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" ],
+  "repository_url": "https://github.com/Brutich/JetPack",
+  "site_url": "https://brutich.github.io/JetPack/",
+  "version": "1.0.2"
+}
