@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>JetBlue</name>
+  </assembly>
+  <namespaces>
+    <!--Remap Namespaces-->
+    <namespace name="Elements">
+      <category>JetPack.Elements</category>
+    </namespace>
+	  <namespace name="Selection">
+      <category>JetPack.Selection</category>
+    </namespace>
+    <namespace name="Utilities">
+      <category>JetPack.Utilities</category>
+    </namespace>
+  </namespaces>
+</doc>

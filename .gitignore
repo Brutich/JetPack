@@ -23,7 +23,7 @@ bld/
 [Ll]og/
 
 # Custom exclude
-JetPackToolkit/
+!JetPackToolkit/bin
 Tests/
 
 # Visual Studio 2015 cache/options directory
