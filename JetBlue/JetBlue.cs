@@ -33,9 +33,6 @@ namespace Elements
         private Element() { }
 
 
-        private static Document document = DocumentManager.Instance.CurrentDBDocument;
-
-
         /// <summary>
         /// The node returns true if element is hidden on view
         /// </summary>
@@ -244,7 +241,7 @@ namespace Elements
             {
                 layers.Add(new Layer(structure.GetLayerFunction(i).ToString(),
                         document.GetElement(structure.GetMaterialId(i)) as Autodesk.Revit.DB.Material,
-                        structure.GetLayerWidth(i) * 304.8,
+                        UnitUtils.ConvertFromInternalUnits(structure.GetLayerWidth(i), DisplayUnitType.DUT_MILLIMETERS),
                         i == strMaterialInd,
                         structure.IsCoreLayer(i))
                     );
@@ -416,9 +413,7 @@ namespace Selection
 
             Document doc = DocumentManager.Instance.CurrentDBDocument;
 
-            FilteredElementCollector elementCollector = new FilteredElementCollector(doc);
-
-            IList<Autodesk.Revit.DB.Element> elements = elementCollector
+            IList<Autodesk.Revit.DB.Element> elements = new FilteredElementCollector(doc)
                 .WherePasses(new ElementWorksetFilter(workset.Id))
                 .ToElements();
 
@@ -695,7 +690,7 @@ namespace Utilities
 
         private Room() { }
 
-        private static Document document = DocumentManager.Instance.CurrentDBDocument;
+        private static readonly Document document = DocumentManager.Instance.CurrentDBDocument;
 
         /// <summary>
         /// </summary>
