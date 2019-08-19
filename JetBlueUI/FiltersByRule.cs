@@ -9,7 +9,7 @@ namespace JetBlueUI
     /// <summary>
     /// Sample NodeModel with custom Gui
     /// </summary>
-    [NodeName("FiltersByRule")]
+    [NodeName("Filters By Rule")]
     [NodeDescription("Example Node Model, multiplies A x the value of the slider")]
     [NodeCategory("JetPack")]
     [InPortNames("A")]

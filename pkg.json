@@ -11,7 +11,11 @@
   "keywords": [ "set", "elements", "name", "delete", "deleting", "selection", "door", "handing", "wall", "type", "structure", "warnings", "worksets" ],
   "license": "",
   "name": "JetPackToolkit",
-  "node_libraries": [ "JetBlue.customization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "JetBlue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" ],
+  "node_libraries": [
+    "JetBlue.customization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "JetBlue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "JetBlueUI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+  ],
   "repository_url": "https://github.com/Brutich/JetPack",
   "site_url": "https://brutich.github.io/JetPack/",
   "version": "1.0.2"
