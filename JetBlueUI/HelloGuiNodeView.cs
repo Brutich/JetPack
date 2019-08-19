@@ -7,7 +7,7 @@ namespace JetBlueUI
     {
         public void CustomizeView(FiltersByRule model, NodeView nodeView)
         {
-            var slider = new Slider();
+            var slider = new Combobox();
             nodeView.inputGrid.Children.Add(slider);
             slider.DataContext = model;
         }

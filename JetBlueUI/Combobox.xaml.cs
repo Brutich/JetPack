@@ -18,9 +18,9 @@ namespace JetBlueUI
     /// <summary>
     /// Interaction logic for Slider.xaml
     /// </summary>
-    public partial class Slider : UserControl
+    public partial class Combobox : UserControl
     {
-        public Slider()
+        public Combobox()
         {
             InitializeComponent();
         }

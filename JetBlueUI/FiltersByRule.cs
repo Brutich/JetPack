@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Dynamo.Graph.Nodes;
-using JetBlue;
+using Dynamo.Utilities;
 using ProtoCore.AST.AssociativeAST;
+using RevitServices.Persistence;
+using Autodesk.Revit.DB;
+
+using JetBlue;
+
 
 namespace JetBlueUI
 {
@@ -21,37 +28,53 @@ namespace JetBlueUI
     [IsDesignScriptCompatible]
     public class FiltersByRule : NodeModel
     {
-        private double _sliderValue;
+        private ObservableCollection<string> _filters;
+        private string _selectedFilter;
 
-
-        public double SliderValue
+        public ObservableCollection<string> Filters
         {
-            get { return _sliderValue; }
+            get { return _filters; }
             set
             {
-                _sliderValue = value;
-                RaisePropertyChanged("SliderValue");
+                _filters = value;
+                RaisePropertyChanged("Filters");
+                OnNodeModified(false);
+            }
+        }
+
+        public string SelectedFilter
+        {
+            get { return _selectedFilter; }
+            set
+            {
+                _selectedFilter = value;
+                RaisePropertyChanged("SelectedFilter");
                 OnNodeModified(false);
             }
         }
 
         public FiltersByRule()
         {
+            var fec = new FilteredElementCollector(DocumentManager.Instance.CurrentDBDocument);
+            fec.OfClass(typeof(ParameterFilterElement));
+            var elements = fec.ToElements();
+
+            _filters = elements.Select(x => x.Name).ToObservableCollection();
+
             RegisterAllPorts();
         }
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
 
-            if (!InPorts[0].IsConnected) //(!HasConnectedInput(0))
+            if (!InPorts[0].IsConnected)
             {
                 return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), AstFactory.BuildNullNode()) };
             }
-            var sliderValue = AstFactory.BuildDoubleNode(SliderValue);
-            var functionCall =
-              AstFactory.BuildFunctionCall(
-                new Func<double, double, double>(Functions.MultiplyTwoNumbers),
-                new List<AssociativeNode> { inputAstNodes[0], sliderValue });
+            var filterName = AstFactory.BuildStringNode(SelectedFilter);
+            var functionCall = AstFactory.BuildFunctionCall(
+                new Func<string, ParameterFilterElement>(Functions.ByName),
+                new List<AssociativeNode> { filterName });
 
             return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), functionCall) };
         }
