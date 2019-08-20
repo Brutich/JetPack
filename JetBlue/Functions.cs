@@ -1,8 +1,8 @@
-﻿using Autodesk.DesignScript.Runtime;
+﻿using System;
+using System.Linq;
+using Autodesk.DesignScript.Runtime;
 using Autodesk.Revit.DB;
 using RevitServices.Persistence;
-using System;
-using System.Linq;
 
 namespace JetBlue
 {

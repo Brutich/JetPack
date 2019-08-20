@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="300">
     <Grid>
-        <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}"/>
+        <ComboBox MinWidth="100" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}"/>
     </Grid>
 </UserControl>
