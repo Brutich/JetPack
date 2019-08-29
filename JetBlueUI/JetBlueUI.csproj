@@ -15,6 +15,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +41,7 @@
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.4\lib\net47\CommonServiceLocator.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="CoreNodeModels, Version=2.3.0.5885, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamoVisualProgramming.WpfUILibrary.2.3.0.5885\lib\net47\CoreNodeModels.dll</HintPath>
@@ -103,9 +105,11 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -118,13 +122,20 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2020\RevitAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2020\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitNodes">
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2020\AddIns\DynamoForRevit\Revit\RevitNodes.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="RevitServices">
-      <HintPath>..\..\..\..\..\..\Program Files\Dynamo\Dynamo Revit\2\Revit_2019\RevitServices.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Autodesk\Revit 2020\AddIns\DynamoForRevit\Revit\RevitServices.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -161,10 +172,12 @@
     <ProjectReference Include="..\JetBlue\JetBlue.csproj">
       <Project>{6a7c524a-ad63-4df9-ada9-525fd6b9881c}</Project>
       <Name>JetBlue</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\JetRed\JetRed.csproj">
       <Project>{9f97ca2f-4bbd-47da-86f5-914c95423f35}</Project>
       <Name>JetRed</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
