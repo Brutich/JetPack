@@ -46,7 +46,7 @@ namespace JetBlue
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                return null;
             }
 
             var type = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
@@ -59,8 +59,6 @@ namespace JetBlue
 
             return type;
         }
-
-
     }
 }
  
