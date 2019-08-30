@@ -142,6 +142,21 @@
             Is layer core?
             </summary>
         </member>
+        <member name="T:Elements.FilterElement">
+            <summary>
+            The Filter Element class.
+            </summary>
+        </member>
+        <member name="M:Elements.FilterElement.ByName(System.String)">
+            <summary>
+            Select a ParameterFilterElement from the current document by name
+            </summary>
+            <param name="name">Parameter filter name</param>
+            <returns>Parameter filter</returns>
+            <search>
+            parameter, filter, by, rule, element
+            </search>
+        </member>
         <member name="T:Selection.Get">
             <summary>
             The Get Selection class.
@@ -155,6 +170,16 @@
             <returns>Elements</returns>
             <search>
             elements, from, active, selection
+            </search>
+        </member>
+        <member name="M:Selection.Get.AllElementsByFilter(Autodesk.Revit.DB.ParameterFilterElement)">
+            <summary>
+            The node returns all elements by rule filter from Revit document.
+            </summary>
+            <param name="parameterFilterElement">Parameter filter element.</param>
+            <returns>Elements</returns>
+            <search>
+            elements, by, filter
             </search>
         </member>
         <member name="M:Selection.Get.Warnings(System.Boolean)">
@@ -263,6 +288,21 @@
             <search>
             room
             </search> 
+        </member>
+        <member name="T:JetBlue.Functions">
+            <summary>
+            In order to be executed by the NodeModel AstFactory.BuildFunctionCall 
+            these methods have to be in a separate assembly and be loaded by Dynamo separately
+            File pkg.json defines which dll are loaded
+            </summary>
+        </member>
+        <member name="M:JetBlue.Functions.MultiplyTwoNumbers(System.Double,System.Double)">
+            <summary>
+            Multiply two numbers.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

@@ -321,17 +321,17 @@ namespace Elements
         /// <search>
         /// parameter, filter, by, rule, element
         /// </search>
-        public static ParameterFilterElement ByName(string name)
+        public static Autodesk.Revit.DB.ParameterFilterElement ByName(string name)
         {
             if (name == null) return null;
 
-            var type = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
+            var filterElement = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
                 .FirstOrDefault(x => x.Name == name);
 
-            if (type == null)
+            if (filterElement == null)
                 throw new Exception();
 
-            return type;
+            return filterElement;
         }
     }
 }
@@ -367,7 +367,33 @@ namespace Selection
             return from id in ids select uiDocument.Document.GetElement(id).ToDSType(true);
 
         }
-        
+
+
+        /// <summary>
+        /// The node returns all elements by rule filter from Revit document.
+        /// </summary>
+        /// <param name="parameterFilterElement">Parameter filter element.</param>
+        /// <returns>Elements</returns>
+        /// <search>
+        /// elements, by, filter
+        /// </search>
+        [IsVisibleInDynamoLibrary(true)]
+        [NodeName("All Elements by Filter")]
+        public static IEnumerable<Revit.Elements.Element> AllElementsByFilter(ParameterFilterElement parameterFilterElement)
+        {
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+
+            var parameterFilter = parameterFilterElement as ParameterFilterElement;
+            var categoriesIds = parameterFilter.GetCategories();
+            var elementFilter = parameterFilter.GetElementFilter();
+
+            var elements = new List<Autodesk.Revit.DB.Element>();
+            foreach (var id in categoriesIds)
+                elements.AddRange(new FilteredElementCollector(document).OfCategoryId(id).WherePasses(elementFilter));
+
+            return elements.Select(x => x.ToDSType(true));
+        }
+
 
         /// <summary>
         /// The node returns all Failure Messages from active Revit document.
