@@ -231,8 +231,7 @@ namespace Elements
                         document.GetElement(structure.GetMaterialId(i)) as Autodesk.Revit.DB.Material,
                         UnitUtils.ConvertFromInternalUnits(structure.GetLayerWidth(i), DisplayUnitType.DUT_MILLIMETERS),
                         i == strMaterialInd,
-                        structure.IsCoreLayer(i))
-                    );
+                        structure.IsCoreLayer(i) ));
             }
 
             return layers;
@@ -251,9 +250,7 @@ namespace Elements
         [NodeCategory("Query")]
         public static string FamilyName(Revit.Elements.WallType wallType)
         {
-
             return (wallType.InternalElement as Autodesk.Revit.DB.WallType).FamilyName;
-
         }
 
     }
@@ -306,10 +303,37 @@ namespace Elements
             this.IsStructural = isStructuralLayer;
             this.IsCore = isCoreLayer;
         }
-
-
     }
 
+
+    /// <summary>
+    /// The Filter Element class.
+    /// </summary>
+    public class FilterElement
+    {
+        private FilterElement() { }
+
+        /// <summary>
+        /// Select a ParameterFilterElement from the current document by name
+        /// </summary>
+        /// <param name="name">Parameter filter name</param>
+        /// <returns>Parameter filter</returns>
+        /// <search>
+        /// parameter, filter, by, rule, element
+        /// </search>
+        public static ParameterFilterElement ByName(string name)
+        {
+            if (name == null) return null;
+
+            var type = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
+                .FirstOrDefault(x => x.Name == name);
+
+            if (type == null)
+                throw new Exception();
+
+            return type;
+        }
+    }
 }
 
 
@@ -410,7 +434,6 @@ namespace Selection
                 outputData.Add(elem.ToDSType(true));
 
             return outputData;
-
         }
 
 
@@ -429,11 +452,11 @@ namespace Selection
 
             Document document = DocumentManager.Instance.CurrentDBDocument;
 
-            FilteredWorksetCollector worksets = new FilteredWorksetCollector(document);
+            var worksets = new FilteredWorksetCollector(document);
 
-            List<string> wsKindes = new List<string>();
-            List<string> wsNames = new List<string>();
-            List<int> wsIds = new List<int>();
+            var wsKindes = new List<string>();
+            var wsNames = new List<string>();
+            var wsIds = new List<int>();
 
             foreach (Autodesk.Revit.DB.Workset ws in worksets)
             {
@@ -459,7 +482,6 @@ namespace Selection
     /// </summary>
     public class Set
     {
-
         private Set() { }
 
         /// <summary>
@@ -500,15 +522,15 @@ namespace Utilities
 
         private static List<ElementId> Intersect(ElementId element_id, ref List<ElementId> elementIds)
         {
-            // Collect intersected elem IDs
-            FilteredElementCollector localCollector = new FilteredElementCollector(document, elementIds);
+            // Collect intersected elem IDs.
+            var localCollector = new FilteredElementCollector(document, elementIds);
             Autodesk.Revit.DB.Element element = document.GetElement(element_id);
             List<ElementId> colectedElementIds = localCollector
                 .WherePasses(new ElementIntersectsElementFilter(element))
                 .ToElementIds() as List<ElementId>;
 
             // Remove initial Element ID from element_ids
-            // and revome filtered element IDs from element_ids
+            // and revome filtered element IDs from element_ids.
             elementIds.Remove(element_id);
             foreach (ElementId id in colectedElementIds)
                 elementIds.Remove(id);
@@ -530,10 +552,10 @@ namespace Utilities
         public static List<IEnumerable<Revit.Elements.Element>> GroupByIntersection(Revit.Elements.Element[] elements)
         {
 
-            List<IEnumerable<Revit.Elements.Element>> outputGroups = new List<IEnumerable<Revit.Elements.Element>>();
+            var outputGroups = new List<IEnumerable<Revit.Elements.Element>>();
 
             // List of unwrapped dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
+            var elementIds = new List<ElementId>();
             foreach (Revit.Elements.Element e in elements)
                 elementIds.Add(e.InternalElement.Id);
 
