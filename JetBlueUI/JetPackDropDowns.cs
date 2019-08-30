@@ -5,7 +5,6 @@ using Autodesk.Revit.DB;
 using CoreNodeModels;
 using Dynamo.Graph.Nodes;
 using Dynamo.Utilities;
-using JetBlue;
 using Newtonsoft.Json;
 using ProtoCore.AST.AssociativeAST;
 using RevitServices.Persistence;
@@ -40,7 +39,7 @@ namespace JetBlueUI
 
     [NodeName("Parameter Filter Elements")]
     [NodeDescription("Represents collection of Parameter Filter elements")]
-    [NodeCategory("JetPack")]
+    [NodeCategory("JetPack.Selection.Get")]
     [IsDesignScriptCompatible]
     public class FiltersByRule : JetPackDropDownBase
     {
@@ -82,7 +81,7 @@ namespace JetBlueUI
             // Build an AST node for the type of object contained in your Items collection.
             var filterName = AstFactory.BuildStringNode((string)Items[SelectedIndex].Item);
             var functionCall = AstFactory.BuildFunctionCall(
-                new Func<string, ParameterFilterElement>(Functions.ByName),
+                new Func<string, ParameterFilterElement>(Elements.FilterElement.ByName),
                 new List<AssociativeNode> { filterName });
 
             return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), functionCall) };

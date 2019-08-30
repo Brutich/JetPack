@@ -23,42 +23,7 @@ namespace JetBlue
         public static double MultiplyTwoNumbers(double a, double b)
         {
             return a * b;
-        }
-        
-
-        /// <summary>
-        /// Filter Name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string FilterName(string name)
-        {
-            return name;
-        }
-
-
-        /// <summary>
-        /// Select a ParameterFilterElement from the current document by name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static ParameterFilterElement ByName(string name)
-        {
-            if (name == null)
-            {
-                return null;
-            }
-
-            var type = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
-                .FirstOrDefault(x => x.Name == name);
-
-            if (type == null)
-            {
-                throw new Exception();
-            }
-
-            return type;
-        }
+        }        
     }
 }
  
