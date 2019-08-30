@@ -16,7 +16,6 @@ namespace JetBlueUI
     {
         protected JetPackDropDownBase(string value) : base(value) { }
 
-
         [JsonConstructor]
         public JetPackDropDownBase(string value, IEnumerable<PortModel> inPorts, IEnumerable<PortModel> outPorts) : base(value, inPorts, outPorts) { }
 
@@ -39,7 +38,6 @@ namespace JetBlueUI
         }
     }
 
-
     [NodeName("Parameter Filter Elements")]
     [NodeDescription("Represents collection of Parameter Filter elements")]
     [NodeCategory("JetPack")]
@@ -50,7 +48,6 @@ namespace JetBlueUI
         private const string outputName = "Parameter Filter Element";
 
         public FiltersByRule() : base(outputName) { }
-
 
         [JsonConstructor]
         public FiltersByRule(IEnumerable<PortModel> inPorts, IEnumerable<PortModel> outPorts) : base(outputName, inPorts, outPorts) { }
@@ -70,22 +67,17 @@ namespace JetBlueUI
                 return SelectionState.Done;
             }
 
-            foreach (var element in elements)
-            {
+            foreach (Element element in elements)
                 Items.Add(new DynamoDropDownItem(element.Name, element.Name));
-            }
 
-            Items.OrderBy(x => x.Name).ToObservableCollection();
-            return SelectionState.Done;
-        }
-        
+            Items = Items.OrderBy(x => x.Name).ToObservableCollection();
+            return SelectionState.Restore;
+        }        
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             if (!CanBuildOutputAst(NO_PARAMETER_FILTERS))
-            {
                 return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), AstFactory.BuildNullNode()) };
-            }
 
             // Build an AST node for the type of object contained in your Items collection.
             var filterName = AstFactory.BuildStringNode((string)Items[SelectedIndex].Item);
@@ -93,10 +85,7 @@ namespace JetBlueUI
                 new Func<string, ParameterFilterElement>(Functions.ByName),
                 new List<AssociativeNode> { filterName });
 
-            //var stringNode = AstFactory.BuildStringNode((string)Items[SelectedIndex].Item);
-            var assign = AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), functionCall);
-
-            return new List<AssociativeNode> { assign };
+            return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), functionCall) };
         }
     }
 }
