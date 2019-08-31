@@ -22,7 +22,7 @@
         </member>
         <member name="M:Elements.Element.SetName(Revit.Elements.Element,System.String)">
             <summary>
-            Sets new name. It may be necessary to perform inside the transaction.
+            Sets new name.
             </summary>
             <param name="element">Element for renaming.</param>
             <param name="name">New name.</param>
@@ -68,7 +68,7 @@
         </member>
         <member name="M:Elements.FamilyInstance.ChangeType(Revit.Elements.FamilyInstance,Revit.Elements.FamilyType)">
             <summary>
-            Changes the type of family instance to another. It may be necessary to perform inside the transaction body.
+            Changes the type of family instance to another.
             </summary>
             <param name="familyInstance">Family instance for changing type.</param>
             <param name="familyType">Another family type.</param>
@@ -277,7 +277,7 @@
         </member>
         <member name="T:Utilities.Room">
             <summary>
-            The FamilyInstance class.
+            The Room class.
             </summary>
         </member>
         <member name="M:Utilities.Room.Doors(Revit.Elements.Room)">

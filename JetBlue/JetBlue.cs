@@ -56,7 +56,7 @@ namespace Elements
 
 
         /// <summary>
-        /// Sets new name. It may be necessary to perform inside the transaction.
+        /// Sets new name.
         /// </summary>
         /// <param name="element">Element for renaming.</param>
         /// <param name="name">New name.</param>
@@ -70,7 +70,10 @@ namespace Elements
             // Unwrap elements
             Autodesk.Revit.DB.Element elem = element.InternalElement;
 
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+            TransactionManager.Instance.EnsureInTransaction(document);
             elem.Name = name;
+            TransactionManager.Instance.TransactionTaskDone();
 
             return elem.ToDSType(true);
         }
@@ -98,10 +101,9 @@ namespace Elements
         public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
-            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
 
             return instance.HandFlipped ^ instance.FacingFlipped;
-
         }
 
 
@@ -144,7 +146,7 @@ namespace Elements
 
 
         /// <summary>
-        /// Changes the type of family instance to another. It may be necessary to perform inside the transaction body.
+        /// Changes the type of family instance to another.
         /// </summary>
         /// <param name="familyInstance">Family instance for changing type.</param>
         /// <param name="familyType">Another family type.</param>
@@ -157,15 +159,12 @@ namespace Elements
             Revit.Elements.FamilyInstance familyInstance,
             Revit.Elements.FamilyType familyType)
         {
-
             // Unwrap input parameters
             Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             Autodesk.Revit.DB.Element anotherType = familyType.InternalElement;
 
             TransactionManager.Instance.EnsureInTransaction(DocumentManager.Instance.CurrentDBDocument);
-
             instance.ChangeTypeId(anotherType.Id);
-
             TransactionManager.Instance.TransactionTaskDone();
 
             return familyInstance;
@@ -184,13 +183,11 @@ namespace Elements
         [NodeCategory("Query")]
         public static Revit.Elements.FamilyInstance SuperComponent(Revit.Elements.FamilyInstance familyInstance)
         {
-
             // Unwrap input parameters
             var instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             var superComponent = instance.SuperComponent as Autodesk.Revit.DB.FamilyInstance;
 
             return superComponent.ToDSType(true) as Revit.Elements.FamilyInstance;
-
         }
     }
 
@@ -218,8 +215,8 @@ namespace Elements
         {
             Document document = DocumentManager.Instance.CurrentDBDocument;
 
-            Autodesk.Revit.DB.WallType _wallType = wallType.InternalElement as Autodesk.Revit.DB.WallType;
-            CompoundStructure structure = _wallType.GetCompoundStructure();
+            var wt = wallType.InternalElement as Autodesk.Revit.DB.WallType;
+            CompoundStructure structure = wt.GetCompoundStructure();
             int layerCount = structure.LayerCount;
             int strMaterialInd = structure.StructuralMaterialIndex;
 
@@ -360,12 +357,11 @@ namespace Selection
         [NodeName("All Elements From Active Selection")]
         public static IEnumerable<Revit.Elements.Element> AllElementsFromActiveSelection(bool toggle)
         {
-
+            Document document = DocumentManager.Instance.CurrentDBDocument;
             UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
             ICollection<ElementId> ids = uiDocument.Selection.GetElementIds();
 
-            return from id in ids select uiDocument.Document.GetElement(id).ToDSType(true);
-
+            return ids.Select(x => document.GetElement(x).ToDSType(true));
         }
 
 
@@ -411,15 +407,15 @@ namespace Selection
             Document document = DocumentManager.Instance.CurrentDBDocument;
             IList<Autodesk.Revit.DB.FailureMessage> warnings = document.GetWarnings();
 
-            List<string> descriptions = new List<string>();
-            List<FailureDefinitionId> failureDefinitionId = new List<FailureDefinitionId>();
-            List<object> elements = new List<object>();
+            var descriptions = new List<string>();
+            var failureDefinitionId = new List<FailureDefinitionId>();
+            var elements = new List<object>();
 
             foreach (Autodesk.Revit.DB.FailureMessage w in warnings)
             {
                 descriptions.Add(w.GetDescriptionText());
                 failureDefinitionId.Add(w.GetFailureDefinitionId());
-                List<Revit.Elements.Element> elems = new List<Revit.Elements.Element>();
+                var elems = new List<Revit.Elements.Element>();
                 foreach (ElementId id in w.GetFailingElements())
                     elems.Add(document.GetElement(id).ToDSType(true));
 
@@ -455,7 +451,7 @@ namespace Selection
                 .WherePasses(new ElementWorksetFilter(workset.Id))
                 .ToElements();
 
-            List<Revit.Elements.Element> outputData = new List<Revit.Elements.Element>();
+            var outputData = new List<Revit.Elements.Element>();
             foreach (Autodesk.Revit.DB.Element elem in elements)
                 outputData.Add(elem.ToDSType(true));
 
@@ -522,7 +518,7 @@ namespace Selection
         public static void Selection(Revit.Elements.Element[] elements)
         {
             // List of unwrapped Dynamo element Ids
-            List<ElementId> elementIds = new List<ElementId>();
+            var elementIds = new List<ElementId>();
             foreach (Revit.Elements.Element e in elements)
                 elementIds.Add(e.InternalElement.Id);
 
@@ -624,30 +620,22 @@ namespace Utilities
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static List<Revit.Elements.Element> FilterBySolidIntersection(Revit.Elements.Element[] elements, Autodesk.DesignScript.Geometry.Solid solid)
+        public static IEnumerable<Revit.Elements.Element> FilterBySolidIntersection(Revit.Elements.Element[] elements, Autodesk.DesignScript.Geometry.Solid solid)
         {
+            Document document = DocumentManager.Instance.CurrentDBDocument;
+
             // Convert Proto to Revit
-            Autodesk.Revit.DB.Solid unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
-            
+            var unionSolid = DynamoToRevitBRep.ToRevitType(solid) as Autodesk.Revit.DB.Solid;
+
             // List of unwrapped Dynamo element Ids
-            var elementIds = new List<ElementId>();
-            foreach (Revit.Elements.Element e in elements)
-                elementIds.Add(e.InternalElement.Id);
+            List<ElementId> elementIds = elements.Select(x => x.InternalElement.Id).ToList();
 
             // Collect intersected elements
-            var colectedElements = new FilteredElementCollector(document, elementIds)
-                .WherePasses(new ElementIntersectsSolidFilter(unionSolid))
-                .ToElements() as List<Autodesk.Revit.DB.Element>;
+            var сollector = new FilteredElementCollector(document, elementIds);
+            сollector.WherePasses(new ElementIntersectsSolidFilter(unionSolid));
+            var colectedElements = сollector.ToElements();
 
-            List<Revit.Elements.Element> outputElements = new List<Revit.Elements.Element>();
-
-            foreach (Autodesk.Revit.DB.Element c in colectedElements)
-            {
-                outputElements.Add(c.ToDSType(true));
-            }
-
-            return outputElements;
-
+            return colectedElements.Select(x => x.ToDSType(true));
         }
 
 
@@ -662,32 +650,19 @@ namespace Utilities
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static List<Revit.Elements.Element> FilterByElementIntersection(Revit.Elements.Element[] elements, Revit.Elements.Element element)
+        public static IEnumerable<Revit.Elements.Element> FilterByElementIntersection(Revit.Elements.Element[] elements, Revit.Elements.Element element)
         {
-            // Convert Proto to Revit
-            Autodesk.Revit.DB.Element operatorElement = element.InternalElement;
+            Document document = DocumentManager.Instance.CurrentDBDocument;
 
             // List of unwrapped Dynamo element Ids
-            var elementIds = new List<ElementId>();
-            foreach (Revit.Elements.Element e in elements)
-                elementIds.Add(e.InternalElement.Id);
+            List<ElementId> elementIds = elements.Select(x => x.InternalElement.Id).ToList();
 
             // Collect intersected elements
-            FilteredElementCollector сollector = new FilteredElementCollector(document, elementIds);
-            List<Autodesk.Revit.DB.Element> colectedElements = сollector
-                .WherePasses(new ElementIntersectsElementFilter(operatorElement))
-                .ToElements() as List<Autodesk.Revit.DB.Element>;
+            var сollector = new FilteredElementCollector(document, elementIds);
+            сollector.WherePasses(new ElementIntersectsElementFilter(element.InternalElement));
+            var colectedElements = сollector.ToElements();
 
-
-            List<Revit.Elements.Element> outputElements = new List<Revit.Elements.Element>();
-
-            foreach (Autodesk.Revit.DB.Element c in colectedElements)
-            {
-                outputElements.Add(c.ToDSType(true));
-            }
-
-            return outputElements;
-
+            return colectedElements.Select(x => x.ToDSType(true));
         }
 
 
@@ -709,16 +684,14 @@ namespace Utilities
 
             // Transaction Start
             TransactionManager.Instance.EnsureInTransaction(document);
-
             document.Delete(elementIds);
-
             //Transaction End
             TransactionManager.Instance.TransactionTaskDone();
         }
     }
 
     /// <summary>
-    /// The FamilyInstance class.
+    /// The Room class.
     /// </summary>
     public class Room
     {
@@ -747,7 +720,6 @@ namespace Utilities
                 ToElements() as List<Autodesk.Revit.DB.FamilyInstance>;
 
             return elements.Where(e => e.FromRoom == rm || e.ToRoom == rm);
-
         }
 
     }

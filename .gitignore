@@ -23,7 +23,7 @@ bld/
 [Ll]og/
 
 # Custom exclude
-!JetPackToolkit/bin
+JetPackToolkit/
 Tests/
 
 # Visual Studio 2015 cache/options directory
@@ -263,4 +263,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
 /TestFiles/
+

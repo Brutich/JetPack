@@ -37,13 +37,13 @@ namespace JetBlueUI
         }
     }
 
-    [NodeName("Parameter Filter Elements")]
-    [NodeDescription("Represents collection of Parameter Filter elements")]
+    [NodeName("Rule-based Filters")]
+    [NodeDescription("Represents collection of rule-based filters")]
     [NodeCategory("JetPack.Selection.Get")]
     [IsDesignScriptCompatible]
     public class FiltersByRule : JetPackDropDownBase
     {
-        private const string NO_PARAMETER_FILTERS = "No parameter filters available.";
+        private const string NO_PARAMETER_FILTERS = "No rule-based filters available.";
         private const string outputName = "Parameter Filter Element";
 
         public FiltersByRule() : base(outputName) { }
@@ -78,7 +78,6 @@ namespace JetBlueUI
             if (!CanBuildOutputAst(NO_PARAMETER_FILTERS))
                 return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), AstFactory.BuildNullNode()) };
 
-            // Build an AST node for the type of object contained in your Items collection.
             var filterName = AstFactory.BuildStringNode((string)Items[SelectedIndex].Item);
             var functionCall = AstFactory.BuildFunctionCall(
                 new Func<string, ParameterFilterElement>(Elements.FilterElement.ByName),
