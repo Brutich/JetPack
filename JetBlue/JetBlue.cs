@@ -720,9 +720,9 @@ namespace Utilities
             var fec = new FilteredElementCollector(document);
             fec.OfCategory(BuiltInCategory.OST_Doors);
             fec.OfClass(typeof(Autodesk.Revit.DB.FamilyInstance));
-            var doors = fec.ToElements().Cast<Autodesk.Revit.DB.FamilyInstance>();
+            var elements = fec.ToElements();
 
-            if (!doors.Any())
+            if (!elements.Any())
                 return new Dictionary<string, object>()
                 {
                     { "FromDoors", Enumerable.Empty<Revit.Elements.FamilyInstance>() },
@@ -732,17 +732,19 @@ namespace Utilities
             var fromDoors = new List<Revit.Elements.FamilyInstance>();
             var toDoors = new List<Revit.Elements.FamilyInstance>();
             var rm = room.InternalElement as Autodesk.Revit.DB.Architecture.Room;
-            foreach (var door in doors)
-            {   
-                if(door.ToRoom?.Id == rm.Id)
+            foreach (var element in elements)
+            {
+                var door = element as Autodesk.Revit.DB.FamilyInstance;
+
+                if (door.ToRoom?.Id == rm.Id)
                 {
-                    toDoors.Add(door.ToDSType(true) as Revit.Elements.FamilyInstance);
+                    toDoors.Add(element.ToDSType(true) as Revit.Elements.FamilyInstance);
                     continue;
                 }
 
                 if (door.FromRoom?.Id == rm.Id)
                 {
-                    fromDoors.Add(door.ToDSType(true) as Revit.Elements.FamilyInstance);
+                    fromDoors.Add(element.ToDSType(true) as Revit.Elements.FamilyInstance);
                 }
             }
 
@@ -754,3 +756,4 @@ namespace Utilities
         }
     }
 }
+    
