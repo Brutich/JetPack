@@ -29,7 +29,6 @@ namespace Elements
     /// </summary>
     public class Element
     {
-
         private Element() { }
 
         /// <summary>
@@ -723,7 +722,7 @@ namespace Utilities
             var elements = fec.ToElements();
 
             if (!elements.Any())
-                return new Dictionary<string, object>()
+                return new Dictionary<string, object>
                 {
                     { "FromDoors", Enumerable.Empty<Revit.Elements.FamilyInstance>() },
                     { "ToDoors", Enumerable.Empty<Revit.Elements.FamilyInstance>() }
