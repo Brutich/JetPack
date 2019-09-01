@@ -191,10 +191,10 @@
     <Error Condition="!Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.12.0\build\NUnit.props'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)JetPackToolkit\bin\$(ProjectName).dll"
-copy /Y "$(TargetDir)$(ProjectName).xml" "$(SolutionDir)JetPackToolkit\bin\$(ProjectName).xml"
-copy /Y "$(TargetDir)$(ProjectName).customization.dll" "$(SolutionDir)JetPackToolkit\bin\$(ProjectName).customization.dll"
-copy /Y "$(ProjectDir)JetBlue_DynamoCustomization.xml" "$(SolutionDir)JetPackToolkit\bin\JetBlue_DynamoCustomization.xml"
-copy /Y "$(SolutionDir)pkg.json" "$(SolutionDir)JetPackToolkit\pkg.json"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).dll"
+copy /Y "$(TargetDir)$(ProjectName).xml" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).xml"
+copy /Y "$(TargetDir)$(ProjectName).customization.dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).customization.dll"
+copy /Y "$(ProjectDir)JetBlue_DynamoCustomization.xml" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\JetBlue_DynamoCustomization.xml"
+copy /Y "$(SolutionDir)pkg.json" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\pkg.json"</PostBuildEvent>
   </PropertyGroup>
 </Project>

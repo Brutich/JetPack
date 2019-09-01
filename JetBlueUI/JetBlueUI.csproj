@@ -180,8 +180,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)JetPackToolkit\bin\$(ProjectName).dll"
-copy /Y "$(ProjectDir)JetBlueUI_DynamoCustomization.xml" "$(SolutionDir)JetPackToolkit\bin\JetBlueUI_DynamoCustomization.xml"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).dll"
+copy /Y "$(ProjectDir)JetBlueUI_DynamoCustomization.xml" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\JetBlueUI_DynamoCustomization.xml"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -32,7 +32,6 @@ namespace Elements
 
         private Element() { }
 
-
         /// <summary>
         /// The node returns true if element is hidden on view
         /// </summary>
@@ -52,8 +51,7 @@ namespace Elements
 
             return elem.IsHidden(inputView);
         }
-
-
+        
 
         /// <summary>
         /// Sets new name.
@@ -89,21 +87,21 @@ namespace Elements
         private FamilyInstance() { }
 
         /// <summary>
-        /// The node returns "true" if family instance is flipped.
+        /// The node returns "true" if family instance is mirrored. (only one axis is flipped)
         /// </summary>
         /// <param name="familyInstance">Family instance for flipping test.</param>
         /// <returns>Is flipped</returns>
         /// <search>
-        /// family, instance, test, flipped
+        /// family, instance, test, flipped, mirrored
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static bool IsFlipped(Revit.Elements.FamilyInstance familyInstance)
+        public static bool IsMirrored(Revit.Elements.FamilyInstance familyInstance)
         {
             // Unwrap element
             var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
 
-            return instance.HandFlipped ^ instance.FacingFlipped;
+            return instance.Mirrored;
         }
 
 
@@ -119,10 +117,12 @@ namespace Elements
         [NodeCategory("Query")]
         public static Revit.Elements.Room ToRoom(Revit.Elements.FamilyInstance familyInstance)
         {
-            // Unwrap element
-            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            if (familyInstance == null) return null;
 
-            return instance.ToRoom.ToDSType(true) as Revit.Elements.Room;
+            var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            var toRoom = instance.ToRoom;
+
+            return toRoom == null ? null : toRoom.ToDSType(true) as Revit.Elements.Room;
         }
 
 
@@ -138,10 +138,12 @@ namespace Elements
         [NodeCategory("Query")]
         public static Revit.Elements.Room FromRoom(Revit.Elements.FamilyInstance familyInstance)
         {
-            // Unwrap element
-            Autodesk.Revit.DB.FamilyInstance instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            if (familyInstance == null) return null;
 
-            return instance.FromRoom.ToDSType(true) as Revit.Elements.Room;
+            var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
+            var fromRoom = instance.FromRoom;
+
+            return fromRoom == null ? null : fromRoom.ToDSType(true) as Revit.Elements.Room;
         }
 
 
@@ -695,7 +697,6 @@ namespace Utilities
     /// </summary>
     public class Room
     {
-
         private Room() { }
 
         private static readonly Document document = DocumentManager.Instance.CurrentDBDocument;
@@ -705,24 +706,51 @@ namespace Utilities
         /// <param name="room"></param>
         /// <returns></returns>
         /// <search>
-        /// room
+        /// rooms, from, to, doors
         /// </search> 
         [IsVisibleInDynamoLibrary(true)]
         [NodeCategory("Query")]
-        public static IEnumerable<Autodesk.Revit.DB.FamilyInstance> Doors(Revit.Elements.Room room)
+        [MultiReturn("FromDoors", "ToDoors")]
+        public static Dictionary<string, object> Doors(Revit.Elements.Room room)
         {
-            // Unwrap element
-            Autodesk.Revit.DB.Architecture.Room rm = room.InternalElement as Autodesk.Revit.DB.Architecture.Room;
+            if (room == null) return null;
 
-            var elements = new FilteredElementCollector(document).
-                OfCategory(BuiltInCategory.OST_Doors).
-                WhereElementIsNotElementType().
-                ToElements() as List<Autodesk.Revit.DB.FamilyInstance>;
+            Document document = DocumentManager.Instance.CurrentDBDocument;
 
-            return elements.Where(e => e.FromRoom == rm || e.ToRoom == rm);
+            var fec = new FilteredElementCollector(document);
+            fec.OfCategory(BuiltInCategory.OST_Doors);
+            fec.OfClass(typeof(Autodesk.Revit.DB.FamilyInstance));
+            var doors = fec.ToElements().Cast<Autodesk.Revit.DB.FamilyInstance>();
+
+            if (!doors.Any())
+                return new Dictionary<string, object>()
+                {
+                    { "FromDoors", Enumerable.Empty<Revit.Elements.FamilyInstance>() },
+                    { "ToDoors", Enumerable.Empty<Revit.Elements.FamilyInstance>() }
+                };
+
+            var fromDoors = new List<Revit.Elements.FamilyInstance>();
+            var toDoors = new List<Revit.Elements.FamilyInstance>();
+            var rm = room.InternalElement as Autodesk.Revit.DB.Architecture.Room;
+            foreach (var door in doors)
+            {   
+                if(door.ToRoom?.Id == rm.Id)
+                {
+                    toDoors.Add(door.ToDSType(true) as Revit.Elements.FamilyInstance);
+                    continue;
+                }
+
+                if (door.FromRoom?.Id == rm.Id)
+                {
+                    fromDoors.Add(door.ToDSType(true) as Revit.Elements.FamilyInstance);
+                }
+            }
+
+            return new Dictionary<string, object>
+            {
+                { "FromDoors", fromDoors},
+                { "ToDoors", toDoors}
+            }; 
         }
-
     }
 }
-
-    
