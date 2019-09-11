@@ -139,6 +139,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.4.1.0.0\lib\NET40\System.Windows.Interactivity.dll</HintPath>
       <Private>False</Private>
@@ -177,16 +178,36 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="JetBlueUI_DynamoCustomization.xml" />
+    <EmbeddedResource Include="Resources\JetBlueUI.FiltersByRule.Small.png" />
+    <EmbeddedResource Include="Resources\JetBlueUI.FiltersByRule.Large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\JetBlueUIImages.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).dll"
-copy /Y "$(ProjectDir)JetBlueUI_DynamoCustomization.xml" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\JetBlueUI_DynamoCustomization.xml"</PostBuildEvent>
-  </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.12.0\build\NUnit.props'))" />
   </Target>
+  <Target Name="AfterBuild">
+    <!-- Get System.Drawing.dll -->
+    <GetReferenceAssemblyPaths TargetFrameworkMoniker=".NETFramework, Version=v4.7.2">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="FrameworkAssembliesPath" />
+    </GetReferenceAssemblyPaths>
+    <!-- Get assembly -->
+    <GetAssemblyIdentity AssemblyFiles="$(OutDir)$(TargetName).dll">
+      <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
+    </GetAssemblyIdentity>
+    <!-- Generate customization dll -->
+    <GenerateResource SdkToolsPath="$(TargetFrameworkSDKToolsDirectory)" UseSourcePath="true" Sources="$(ProjectDir)\Resources\JetBlueUIImages.resx" OutputResources="$(ProjectDir)\Resources\JetBlueUIImages.resources" References="$(FrameworkAssembliesPath)System.Drawing.dll" />
+    <AL SdkToolsPath="$(TargetFrameworkSDKToolsDirectory)" TargetType="library" EmbedResources="$(ProjectDir)\Resources\JetBlueUIImages.resources" OutputAssembly="$(OutDir)JetBlueUI.customization.dll" Version="%(AssemblyInfo.Version)" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).dll"
+copy /Y "$(TargetDir)$(ProjectName).customization.dll" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\$(ProjectName).customization.dll"
+copy /Y "$(ProjectDir)JetBlueUI_DynamoCustomization.xml" "C:\Users\oleg8\AppData\Roaming\Dynamo\Dynamo Revit\2.1\packages\JetPackToolkit\bin\JetBlueUI_DynamoCustomization.xml"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
