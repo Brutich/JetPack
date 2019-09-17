@@ -2,7 +2,7 @@
   "contains_binaries": true,
   "contents": "",
   "dependencies": [],
-  "description": "JetPack is built for Dynamo 2.0+ and Revit 2020+. Simple and powerful nodes. Please use this package instead of JetPack published earlier.",
+  "description": "JetPack is built for Dynamo 2.1+ and Revit 2020+. Simple and powerful nodes. Please use this package instead of JetPack published earlier.",
   "engine": "dynamo",
   "engine_metadata": "",
   "engine_version": "2.1.0.7733",
@@ -18,5 +18,5 @@
   ],
   "repository_url": "https://github.com/Brutich/JetPack",
   "site_url": "https://brutich.github.io/JetPack/",
-  "version": "1.1.4"
+  "version": "1.2.1"
 }
