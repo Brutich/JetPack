@@ -30,5 +30,5 @@ This project requires the following applications or libraries be installed :
 Dynamo : version 2.1 or later
 ```
 ```
-.NET : version 4.7.2 or later
+.NET : version 4.7.1 or later
 ```
