@@ -3,7 +3,7 @@ Packages for Dynamo Visual Programming
 
 JetPack Toolkit is built for Dynamo 2.0+ and Revit 2020+. Contains simple and powerful nodes.
 
-![](https://github.com/Brutich/JetPack/blob/master/doc/all.png)
+![](doc/all.png)
 
 # Getting Started
 
