@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Autodesk.Revit;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Architecture;
-using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.Attributes;
-using Autodesk.DesignScript.Geometry;
 using Autodesk.DesignScript.Runtime;
 using Revit.Elements;
 using Revit.GeometryConversion;
@@ -135,7 +126,8 @@ namespace Elements
         [NodeCategory("Query")]
         public static Revit.Elements.Room FromRoom(Revit.Elements.FamilyInstance familyInstance)
         {
-            if (familyInstance == null) return null;
+            if (familyInstance is null)
+                return null;
 
             var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
             var fromRoom = instance.FromRoom;
@@ -159,7 +151,7 @@ namespace Elements
             Revit.Elements.FamilyType familyType)
         {
             // Unwrap input parameters
-            Autodesk.Revit.DB.FamilyInstance instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
+            var instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             Autodesk.Revit.DB.Element anotherType = familyType.InternalElement;
 
             TransactionManager.Instance.EnsureInTransaction(DocumentManager.Instance.CurrentDBDocument);
@@ -317,11 +309,11 @@ namespace Elements
         /// <search>
         /// parameter, filter, by, rule, element
         /// </search>
-        public static Autodesk.Revit.DB.ParameterFilterElement ByName(string name)
+        public static ParameterFilterElement ByName(string name)
         {
             if (name == null) return null;
 
-            var filterElement = DocumentManager.Instance.ElementsOfType<Autodesk.Revit.DB.ParameterFilterElement>()
+            var filterElement = DocumentManager.Instance.ElementsOfType<ParameterFilterElement>()
                 .FirstOrDefault(x => x.Name == name);
 
             if (filterElement == null)
@@ -378,15 +370,20 @@ namespace Selection
         {
             Document document = DocumentManager.Instance.CurrentDBDocument;
 
-            var parameterFilter = parameterFilterElement as ParameterFilterElement;
-            var categoriesIds = parameterFilter.GetCategories();
-            var elementFilter = parameterFilter.GetElementFilter();
+            var categoriesIds = parameterFilterElement.GetCategories();
+            var elementFilter = parameterFilterElement.GetElementFilter();
 
             var elements = new List<Autodesk.Revit.DB.Element>();
             foreach (var id in categoriesIds)
-                elements.AddRange(new FilteredElementCollector(document).OfCategoryId(id).WherePasses(elementFilter));
+            {
+                using (var fec = new FilteredElementCollector(document))
+                {
+                    fec.OfCategoryId(id).WherePasses(elementFilter);
+                    elements.AddRange(fec.ToElements());
+                }
+            }
 
-            return elements.Select(x => x.ToDSType(true));
+            return elements.Select(x => x.ToDSType(true)).ToList();
         }
 
 
@@ -408,15 +405,17 @@ namespace Selection
 
             var descriptions = new List<string>();
             var failureDefinitionId = new List<FailureDefinitionId>();
-            var elements = new List<object>();
+            var elements = new List<List<Revit.Elements.Element>>();
 
             foreach (Autodesk.Revit.DB.FailureMessage w in warnings)
             {
                 descriptions.Add(w.GetDescriptionText());
                 failureDefinitionId.Add(w.GetFailureDefinitionId());
-                var elems = new List<Revit.Elements.Element>();
-                foreach (ElementId id in w.GetFailingElements())
-                    elems.Add(document.GetElement(id).ToDSType(true));
+
+                List<Revit.Elements.Element> elems = w.GetFailingElements()
+                    .Select(id => document.GetElement(id)
+                    .ToDSType(true))
+                    .ToList();
 
                 elements.Add(elems);
             }
@@ -443,18 +442,13 @@ namespace Selection
         [NodeName("All Elements From Workset")]
         public static IEnumerable<Revit.Elements.Element> AllElementsByWorkset(Workset workset)
         {
-
             Document doc = DocumentManager.Instance.CurrentDBDocument;
 
-            IList<Autodesk.Revit.DB.Element> elements = new FilteredElementCollector(doc)
-                .WherePasses(new ElementWorksetFilter(workset.Id))
-                .ToElements();
+            var fec = new FilteredElementCollector(doc);
+            fec.WherePasses(new ElementWorksetFilter(workset.Id));
+            var elements = fec.ToElements();
 
-            var outputData = new List<Revit.Elements.Element>();
-            foreach (Autodesk.Revit.DB.Element elem in elements)
-                outputData.Add(elem.ToDSType(true));
-
-            return outputData;
+            return elements.Select(x => x.ToDSType(true)).ToList();
         }
 
 
@@ -517,9 +511,7 @@ namespace Selection
         public static void Selection(Revit.Elements.Element[] elements)
         {
             // List of unwrapped Dynamo element Ids
-            var elementIds = new List<ElementId>();
-            foreach (Revit.Elements.Element e in elements)
-                elementIds.Add(e.InternalElement.Id);
+            var elementIds = elements.Select(elem => elem.InternalElement.Id).ToList();
 
             UIDocument uiDocument = DocumentManager.Instance.CurrentUIDocument;
             uiDocument.Selection.SetElementIds(elementIds);
@@ -546,9 +538,9 @@ namespace Utilities
             // Collect intersected elem IDs.
             var localCollector = new FilteredElementCollector(document, elementIds);
             Autodesk.Revit.DB.Element element = document.GetElement(element_id);
-            List<ElementId> colectedElementIds = localCollector
+            ICollection<ElementId> colectedElementIds = localCollector
                 .WherePasses(new ElementIntersectsElementFilter(element))
-                .ToElementIds() as List<ElementId>;
+                .ToElementIds();
 
             // Remove initial Element ID from element_ids
             // and revome filtered element IDs from element_ids.
@@ -556,8 +548,7 @@ namespace Utilities
             foreach (ElementId id in colectedElementIds)
                 elementIds.Remove(id);
 
-            return colectedElementIds;
-
+            return colectedElementIds.ToList();
         }
 
                      
@@ -584,8 +575,7 @@ namespace Utilities
             {
                 ElementId elemId = elementIds[0];
 
-                var grouped = new List<ElementId>();
-                grouped.Add(elemId);
+                var grouped = new List<ElementId> { elemId };
 
                 List<ElementId> colectedElemIds = Intersect(elemId, ref elementIds);
                 grouped.AddRange(colectedElemIds);
@@ -630,9 +620,9 @@ namespace Utilities
             List<ElementId> elementIds = elements.Select(x => x.InternalElement.Id).ToList();
 
             // Collect intersected elements
-            var сollector = new FilteredElementCollector(document, elementIds);
-            сollector.WherePasses(new ElementIntersectsSolidFilter(unionSolid));
-            var colectedElements = сollector.ToElements();
+            var fec = new FilteredElementCollector(document, elementIds);
+            fec.WherePasses(new ElementIntersectsSolidFilter(unionSolid));
+            var colectedElements = fec.ToElements();
 
             return colectedElements.Select(x => x.ToDSType(true));
         }
