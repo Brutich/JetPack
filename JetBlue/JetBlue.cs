@@ -1,5 +1,4 @@
-﻿#region Namespaces
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +11,13 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
+using Autodesk.DesignScript.Geometry;
+using Autodesk.DesignScript.Runtime;
 using Revit.Elements;
 using Revit.GeometryConversion;
 using RevitServices.Persistence;
 using RevitServices.Transactions;
-using Autodesk.DesignScript.Geometry;
-using Autodesk.DesignScript.Runtime;
 using Dynamo.Graph.Nodes;
-#endregion // Namespaces
 
 
 namespace Elements
@@ -121,7 +119,7 @@ namespace Elements
             var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
             var toRoom = instance.ToRoom;
 
-            return toRoom == null ? null : toRoom.ToDSType(true) as Revit.Elements.Room;
+            return toRoom is null ? null : toRoom.ToDSType(true) as Revit.Elements.Room;
         }
 
 
@@ -142,7 +140,7 @@ namespace Elements
             var instance = (Autodesk.Revit.DB.FamilyInstance)familyInstance.InternalElement;
             var fromRoom = instance.FromRoom;
 
-            return fromRoom == null ? null : fromRoom.ToDSType(true) as Revit.Elements.Room;
+            return fromRoom is null ? null : fromRoom.ToDSType(true) as Revit.Elements.Room;
         }
 
 
@@ -188,7 +186,7 @@ namespace Elements
             var instance = familyInstance.InternalElement as Autodesk.Revit.DB.FamilyInstance;
             var superComponent = instance.SuperComponent as Autodesk.Revit.DB.FamilyInstance;
 
-            return superComponent.ToDSType(true) as Revit.Elements.FamilyInstance;
+            return superComponent is null ? null : superComponent.ToDSType(true) as Revit.Elements.FamilyInstance;
         }
     }
 
@@ -197,7 +195,7 @@ namespace Elements
     /// The WallType class.
     /// </summary>
     public class WallType
-    {
+    {    
         
         private WallType() { }
 
@@ -227,7 +225,7 @@ namespace Elements
             {
                 layers.Add(new Layer(structure.GetLayerFunction(i).ToString(),
                         document.GetElement(structure.GetMaterialId(i)) as Autodesk.Revit.DB.Material,
-                        UnitUtils.ConvertFromInternalUnits(structure.GetLayerWidth(i), DisplayUnitType.DUT_MILLIMETERS),
+                        UnitUtils.ConvertFromInternalUnits(structure.GetLayerWidth(i), UnitTypeId.Millimeters),
                         i == strMaterialInd,
                         structure.IsCoreLayer(i) ));
             }
