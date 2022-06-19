@@ -141,8 +141,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JetBlue.cs" />
+    <Compile Include="Library\Utilities\Elements.cs" />
+    <Compile Include="Library\Elements\Element.cs" />
+    <Compile Include="Library\Elements\FamilyInstance.cs" />
+    <Compile Include="Library\Elements\FilterElement.cs" />
+    <Compile Include="Library\Selection\Get.cs" />
+    <Compile Include="Library\Utilities\Room.cs" />
+    <Compile Include="Library\Elements\Layer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Library\Elements\WallType.cs" />
+    <Compile Include="Library\Selection\Set.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
